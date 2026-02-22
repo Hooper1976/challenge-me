@@ -14,14 +14,21 @@
         .card p { margin: 5px 0 0; font-size: 12px; color: #10b981; opacity: 0.7; }
         .pts { font-weight: 900; color: #10b981; font-size: 20px; }
         .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .nav a { color: white; font-size: 24px; text-decoration: none; }
+        .nav a { color: white; font-size: 24px; text-decoration: none; position: relative; }
         .plus-btn { background: white; color: #10b981; width: 50px; height: 50px; border-radius: 25px; display: flex; align-items: center; justify-content: center; margin-top: -35px; border: 4px solid #061c14; font-size: 28px; font-weight: bold; }
+        .unread-badge { position: absolute; top: -5px; right: -8px; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold; display: none; }
     </style>
 </head>
 <body>
     <header>
         <h1>CHALLENGE ME</h1>
-        <a href="#" id="lo" class="logout">LOGOUT</a>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <a href="chat.html" style="position:relative; text-decoration:none; font-size:24px;">
+                💬
+                <span id="unreadCount" class="unread-badge">0</span>
+            </a>
+            <a href="#" id="lo" class="logout">LOGOUT</a>
+        </div>
     </header>
 
     <div id="user" style="font-weight:bold; font-size:14px">Lade...</div>
@@ -45,9 +52,22 @@
         async function run() {
             const { data: { session } } = await sup.auth.getSession();
             if(!session) { window.location.href = 'index.html'; return; }
+            const myId = session.user.id;
             
-            const { data: profile } = await sup.from('profiles').select('username').eq('id', session.user.id).single();
+            const { data: profile } = await sup.from('profiles').select('username').eq('id', myId).single();
             document.getElementById('user').innerText = "Yo, " + (profile?.username || session.user.email.split('@')[0]);
+
+            // UNREAD MESSAGES CHECK
+            const { count: unread } = await sup.from('messages')
+                .select('*', { count: 'exact', head: true })
+                .eq('receiver_id', myId)
+                .eq('is_read', false);
+            
+            if(unread > 0) {
+                const badge = document.getElementById('unreadCount');
+                badge.innerText = unread > 9 ? '9+' : unread;
+                badge.style.display = 'block';
+            }
 
             const { data: quests } = await sup.from('challenges').select('*');
             const list = document.getElementById('list');
@@ -59,7 +79,7 @@
             }
             
             // Check for private challenges (Pop-up)
-            const { data: priv } = await sup.from('user_challenges').select('*, profiles!user_challenges_creator_id_fkey(username)').eq('target_id', session.user.id).eq('status', 'pending').limit(1);
+            const { data: priv } = await sup.from('user_challenges').select('*, profiles!user_challenges_creator_id_fkey(username)').eq('target_id', myId).eq('status', 'pending').limit(1);
             if(priv && priv.length > 0) {
                 alert("🔥 NEUE CHALLENGE!\n" + priv[0].profiles.username + " fordert dich heraus: " + priv[0].title);
             }
