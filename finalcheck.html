@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINAL CHECK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white p-8">
+    <h1 class="text-2xl font-bold text-yellow-500 mb-6 italic uppercase">FINAL CHECK v1.0</h1>
+    <p class="mb-4 text-slate-400 text-sm">Diese Seite umgeht alle Caches. Teste hier die Registrierung für Projekt pfvvpq...</p>
+    
+    <div class="space-y-4">
+        <input type="email" id="fEmail" placeholder="Neue E-Mail" class="w-full bg-slate-800 p-4 rounded-xl outline-none border border-slate-700">
+        <input type="password" id="fPass" placeholder="Passwort" class="w-full bg-slate-800 p-4 rounded-xl outline-none border border-slate-700">
+        <button id="fBtn" class="w-full py-4 bg-yellow-500 text-black font-black rounded-xl uppercase">JETZT REGISTRIEREN ⚡</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = "https://pfvvpqljjfmyvtyiuibh.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        document.getElementById('fBtn').onclick = async () => {
+            const email = document.getElementById('fEmail').value;
+            const password = document.getElementById('fPass').value;
+            const btn = document.getElementById('fBtn');
+            btn.innerText = "Sende Daten...";
+            
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            
+            if (error) {
+                alert("FEHLER VON SUPABASE:\n" + error.message);
+            } else {
+                alert("VOLLEYTREFFER!\nUser ID: " + data.user.id + "\nSchau jetzt in dein Dashboard!");
+            }
+            btn.innerText = "JETZT REGISTRIEREN ⚡";
+        };
+    </script>
+</body>
+</html>
