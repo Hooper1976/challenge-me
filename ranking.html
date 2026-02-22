@@ -2,140 +2,113 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Challenge Me - Leaderboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ranking - Challenge Me</title>
     <style>
-        .pwa-scroll {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        .pwa-scroll::-webkit-scrollbar {
-            display: none;
-        }
-        body {
-            background-color: #0f172a;
-            color: white;
-            font-family: 'Inter', sans-serif;
-        }
-        .rank-gold { background: linear-gradient(135deg, #fbbf24 0%, #b45309 100%); }
-        .rank-silver { background: linear-gradient(135deg, #94a3b8 0%, #475569 100%); }
-        .rank-bronze { background: linear-gradient(135deg, #d97706 0%, #78350f 100%); }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
+        body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; text-align: center; }
+        h1 { font-style: italic; font-size: 26px; color: #10b981; margin: 0 0 20px; font-weight: 900; }
+        
+        /* Podium Styles */
+        .podium { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin-top: 40px; margin-bottom: 40px; }
+        .rank-box { background: #062d24; border: 1px solid #10b981; border-radius: 15px; padding: 15px; position: relative; width: 100px; display: flex; flex-direction: column; align-items: center; }
+        .rank-2 { height: 140px; }
+        .rank-1 { height: 180px; border-color: #facc15; box-shadow: 0 0 25px rgba(250, 204, 21, 0.2); }
+        .rank-3 { height: 120px; }
+        
+        .avatar-circle { width: 50px; height: 50px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; margin-bottom: 10px; border: 2px solid #10b981; }
+        .rank-1 .avatar-circle { border-color: #facc15; transform: scale(1.1); }
+        
+        .crown { position: absolute; top: -25px; font-size: 24px; }
+        .pos-badge { background: #10b981; color: #061c14; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; position: absolute; bottom: -10px; }
+        
+        /* List Styles */
+        .leaderboard-list { text-align: left; margin-top: 20px; padding-bottom: 100px; }
+        .user-row { background: #062d24; padding: 15px 20px; border-radius: 15px; margin-bottom: 10px; display: flex; align-items: center; border: 1px solid #064e3b; }
+        .user-row.me { border-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+        .rank-num { width: 30px; font-weight: 900; color: #059669; italic; }
+        .user-name { flex: 1; color: white; font-weight: bold; }
+        .user-xp { font-weight: 900; color: #10b981; }
+
+        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .nav a { color: white; font-size: 24px; text-decoration: none; }
     </style>
 </head>
-<body class="max-w-md mx-auto min-h-screen flex flex-col pwa-scroll">
+<body>
+    <h1>HALL OF FAME 🏆</h1>
 
-    <!-- Header -->
-    <header class="p-6 bg-slate-900/80 sticky top-0 z-20 backdrop-blur-md border-b border-slate-800">
-        <h1 class="text-2xl font-black italic tracking-tighter text-yellow-500 uppercase">Hall of Fame</h1>
-        <div class="flex mt-4 bg-slate-800 p-1 rounded-2xl">
-            <button class="flex-1 py-2 bg-yellow-500 text-black font-black rounded-xl text-sm">Global</button>
-            <button class="flex-1 py-2 text-slate-400 font-bold text-sm">Friends</button>
-        </div>
-    </header>
-
-    <!-- Top 3 Podium -->
-    <section class="flex justify-center items-end space-x-2 px-6 pt-12 pb-8 bg-gradient-to-b from-slate-900 to-slate-800">
+    <div class="podium" id="topThree">
         <!-- Rank 2 -->
-        <div class="flex flex-col items-center">
-            <div class="relative">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Lukas" class="w-16 h-16 rounded-2xl border-2 border-slate-400 mb-2">
-                <span class="absolute -top-2 -right-2 rank-silver w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold italic">2</span>
-            </div>
-            <p class="text-[10px] font-black uppercase text-slate-400">@Lukas_04</p>
-            <p class="text-sm font-black text-white">4.820</p>
-            <div class="w-20 h-24 bg-slate-700/50 rounded-t-2xl mt-2 border-t border-slate-600"></div>
+        <div class="rank-box rank-2" id="pos2" style="visibility:hidden">
+            <div class="avatar-circle">?</div>
+            <div style="font-size:10px; font-weight:bold; color:white;" id="r2Name">---</div>
+            <div style="font-size:12px; font-weight:900;" id="r2XP">0</div>
+            <div class="pos-badge">2</div>
         </div>
-
         <!-- Rank 1 -->
-        <div class="flex flex-col items-center">
-            <div class="relative">
-                <div class="absolute -top-8 left-1/2 -translate-x-1/2 text-2xl text-yellow-500 animate-bounce">👑</div>
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" class="w-20 h-20 rounded-3xl border-4 border-yellow-500 mb-2 shadow-[0_0_20px_rgba(234,179,8,0.5)]">
-                <span class="absolute -top-2 -right-2 rank-gold w-8 h-8 rounded-full flex items-center justify-center text-sm font-black italic text-black">1</span>
-            </div>
-            <p class="text-xs font-black uppercase text-yellow-500">@Queen_S</p>
-            <p class="text-lg font-black text-white">5.150</p>
-            <div class="w-24 h-32 bg-yellow-500/10 rounded-t-3xl mt-2 border-t-2 border-yellow-500/50"></div>
+        <div class="rank-box rank-1" id="pos1" style="visibility:hidden">
+            <div class="crown">👑</div>
+            <div class="avatar-circle">?</div>
+            <div style="font-size:12px; font-weight:bold; color:white; margin-top:5px;" id="r1Name">---</div>
+            <div style="font-size:14px; font-weight:900; color:#facc15" id="r1XP">0</div>
+            <div class="pos-badge" style="background:#facc15">1</div>
         </div>
-
         <!-- Rank 3 -->
-        <div class="flex flex-col items-center">
-            <div class="relative">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-16 h-16 rounded-2xl border-2 border-amber-700 mb-2">
-                <span class="absolute -top-2 -right-2 rank-bronze w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold italic text-white">3</span>
-            </div>
-            <p class="text-[10px] font-black uppercase text-slate-400">@FixFelix</p>
-            <p class="text-sm font-black text-white">4.100</p>
-            <div class="w-20 h-16 bg-slate-700/50 rounded-t-2xl mt-2 border-t border-slate-600"></div>
+        <div class="rank-box rank-3" id="pos3" style="visibility:hidden">
+            <div class="avatar-circle">?</div>
+            <div style="font-size:10px; font-weight:bold; color:white;" id="r3Name">---</div>
+            <div style="font-size:12px; font-weight:900;" id="r3XP">0</div>
+            <div class="pos-badge">3</div>
         </div>
-    </section>
+    </div>
 
-    <!-- Full List -->
-    <section class="px-6 space-y-3 mb-28">
-        <!-- User Rank -->
-        <div class="glass-card p-4 rounded-3xl border border-yellow-500/50 flex items-center shadow-[0_0_15px_rgba(234,179,8,0.1)]">
-            <span class="w-8 font-black text-yellow-500 italic">#14</span>
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Florian" class="w-10 h-10 rounded-xl mr-4 border border-yellow-500">
-            <div class="flex-1">
-                <h4 class="font-black text-sm">DU (Florian)</h4>
-                <p class="text-[10px] text-slate-400">Nur noch 350 Pts zu Rank 13</p>
-            </div>
-            <div class="text-right">
-                <span class="font-black text-white">1.250</span>
-            </div>
-        </div>
+    <div class="leaderboard-list" id="fullList">
+        <!-- Liste kommt hier rein -->
+    </div>
 
-        <div class="h-px bg-slate-800 my-4"></div>
+    <div class="nav">
+        <a href="dashboard.html">🏠</a>
+        <a href="rewards.html">🎁</a>
+        <a href="create_challenge.html" style="background:white; color:#10b981; width:50px; height:50px; border-radius:25px; display:flex; align-items:center; justify-content:center; margin-top:-35px; border:4px solid #061c14; font-weight:bold;">+</a>
+        <a href="friends.html">👥</a>
+        <a href="ranking.html">🏆</a>
+    </div>
 
-        <!-- Others -->
-        <div class="glass-card p-3 rounded-2xl border border-slate-700/50 flex items-center opacity-80">
-            <span class="w-8 font-bold text-slate-400 italic">4</span>
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mia" class="w-8 h-8 rounded-lg mr-4 overflow-hidden">
-            <div class="flex-1">
-                <h4 class="font-bold text-sm text-slate-200">@Mia_World</h4>
-            </div>
-            <div class="text-right">
-                <span class="font-bold text-slate-300">3.950</span>
-            </div>
-        </div>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
+        
+        async function loadRanking() {
+            const { data: { session } } = await sup.auth.getSession();
+            const { data: users } = await sup.from('profiles').select('*').order('total_points', { ascending: false });
 
-        <div class="glass-card p-3 rounded-2xl border border-slate-700/50 flex items-center opacity-80">
-            <span class="w-8 font-bold text-slate-400 italic">5</span>
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Tom" class="w-8 h-8 rounded-lg mr-4 overflow-hidden">
-            <div class="flex-1">
-                <h4 class="font-bold text-sm text-slate-200">@TomTurbo</h4>
-            </div>
-            <div class="text-right">
-                <span class="font-bold text-slate-300">3.800</span>
-            </div>
-        </div>
-    </section>
+            // Podium füllen
+            if(users.length >= 1) fillRank(1, users[0]);
+            if(users.length >= 2) fillRank(2, users[1]);
+            if(users.length >= 3) fillRank(3, users[2]);
 
-    <!-- Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 px-8 py-4 flex justify-between items-center bg-slate-900/95 backdrop-blur-xl">
-        <button class="text-slate-500 flex flex-col items-center" onclick="window.location.href='index.html'">
-            <i class="fas fa-th-large text-xl"></i>
-            <span class="text-[10px] mt-1">Home</span>
-        </button>
-        <button class="text-yellow-500 flex flex-col items-center">
-            <i class="fas fa-trophy text-xl"></i>
-            <span class="text-[10px] mt-1 text-yellow-500">Ranking</span>
-        </button>
-        <button class="bg-yellow-500 text-black w-12 h-12 rounded-full flex items-center justify-center -mt-10 border-4 border-slate-900 shadow-lg">
-            <i class="fas fa-plus text-xl"></i>
-        </button>
-        <button class="text-slate-500 flex flex-col items-center">
-            <i class="fas fa-comment text-xl"></i>
-            <span class="text-[10px] mt-1">Chat</span>
-        </button>
-        <button class="text-slate-500 flex flex-col items-center">
-            <i class="fas fa-users text-xl"></i>
-            <span class="text-[10px] mt-1">Freunde</span>
-        </button>
-    </nav>
+            // Gesamte Liste
+            const list = document.getElementById('fullList');
+            list.innerHTML = `<h2 style="font-size:12px; opacity:0.5; margin-bottom:15px; text-transform:uppercase;">Alle Herausforderer</h2>`;
+            
+            users.forEach((u, idx) => {
+                const isMe = session && u.id === session.user.id;
+                list.innerHTML += `
+                    <div class="user-row ${isMe ? 'me' : ''}">
+                        <div class="rank-num">#${idx + 1}</div>
+                        <div class="user-name">${u.username || 'Unbekannt'} ${isMe ? '(ICH)' : ''}</div>
+                        <div class="user-xp">${u.total_points || 0} XP</div>
+                    </div>`;
+            });
+        }
 
+        function fillRank(pos, user) {
+            document.getElementById('pos'+pos).style.visibility = 'visible';
+            document.getElementById('r'+pos+'Name').innerText = user.username;
+            document.getElementById('r'+pos+'XP').innerText = (user.total_points || 0) + " XP";
+            document.querySelector('#pos'+pos+' .avatar-circle').innerText = user.username[0].toUpperCase();
+        }
+
+        loadRanking();
+    </script>
 </body>
 </html>
