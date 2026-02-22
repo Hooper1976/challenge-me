@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin - Challenge Me</title>
+    <style>
+        body { background: #022c22; color: #10b981; font-family: sans-serif; padding: 20px; text-align: center; }
+        .admin-box { background: #064e4b; padding: 30px; border-radius: 20px; border: 2px solid #10b981; max-width: 400px; margin: 0 auto; }
+        h1 { color: #facc15; font-size: 24px; text-transform: uppercase; margin-top: 0; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: none; background: #022c22; color: white; font-size: 16px; box-sizing: border-box; }
+        label { display: block; text-align: left; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #facc15; color: black; font-weight: bold; font-size: 16px; cursor: pointer; text-transform: uppercase; }
+        #auth-lock { position: fixed; inset: 0; background: #061c14; z-index: 100; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+
+    <!-- Passwort Sperre -->
+    <div id="auth-lock">
+        <div class="admin-box">
+            <h1>Admin Login</h1>
+            <input type="password" id="master-pw" placeholder="Master Passwort">
+            <button onclick="checkPw()">ZUTRITT GEWÄHREN</button>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-box">
+        <h1>Challenge Editor</h1>
+        <p style="color:white; font-size: 12px; margin-bottom: 20px;">Neue globale Quest hinzufügen</p>
+        
+        <label>Titel der Aufgabe</label>
+        <input type="text" id="q-title" placeholder="z.B. Eisbaden gehen">
+        
+        <label>Beschreibung</label>
+        <textarea id="q-desc" rows="3" placeholder="Was genau muss man tun?"></textarea>
+        
+        <label>Punkte (XP)</label>
+        <input type="number" id="q-points" value="100">
+        
+        <button id="q-btn" onclick="saveQuest()">QUEST VERÖFFENTLICHEN 🚀</button>
+        
+        <div style="margin-top: 30px; border-top: 1px solid #10b981; padding-top: 20px;">
+            <a href="dashboard.html" style="color: #10b981; text-decoration: none; font-size: 14px;">ZURÜCK ZUR APP</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
+        
+        function checkPw() {
+            const pw = document.getElementById('master-pw').value;
+            // Dein Master Passwort
+            if (pw === "ChallengeAdmin2026!") {
+                document.getElementById('auth-lock').style.display = 'none';
+            } else {
+                alert("Passwort falsch!");
+            }
+        }
+
+        async function saveQuest() {
+            const title = document.getElementById('q-title').value;
+            const desc = document.getElementById('q-desc').value;
+            const points = document.getElementById('q-points').value;
+            const btn = document.getElementById('q-btn');
+
+            if(!title || !desc) { alert("Bitte alles ausfüllen!"); return; }
+
+            btn.disabled = true;
+            btn.innerText = "LÄDT HOCH...";
+
+            const { error } = await sup.from('challenges').insert([
+                { title: title, description: desc, points: parseInt(points) }
+            ]);
+
+            if (error) {
+                alert("Fehler: " + error.message);
+            } else {
+                alert("FERTIG! Die Challenge ist jetzt für alle User live.");
+                document.getElementById('q-title').value = '';
+                document.getElementById('q-desc').value = '';
+            }
+            btn.disabled = false;
+            btn.innerText = "QUEST VERÖFFENTLICHEN 🚀";
+        }
+    </script>
+</body>
+</html>
