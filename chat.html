@@ -56,8 +56,12 @@
             if(!session) return window.location.href = 'index.html';
             myId = session.user.id;
 
+            // Check if a specific friend should be pre-selected (via URL ?id=...)
+            const urlParams = new URLSearchParams(window.location.search);
+            const preSelectedId = urlParams.get('id');
+
             // Freunde sicher laden
-            const { data: fships } = await sup.from('friendships').select('user_id_2').eq('user_id_1', myId);
+            const { data: fships } = await sup.from('friendships').select('user_id_2').eq('user_id_1', myId).eq('status', 'accepted');
             const sel = document.getElementById('friendSelect');
             
             if(fships && fships.length > 0) {
@@ -68,8 +72,11 @@
                     const opt = document.createElement('option');
                     opt.value = p.id;
                     opt.innerText = p.username;
+                    if(p.id === preSelectedId) opt.selected = true;
                     sel.appendChild(opt);
                 });
+                
+                if(preSelectedId) { targetId = preSelectedId; loadMsgs(); }
             }
 
             sel.onchange = () => { targetId = sel.value; loadMsgs(); };

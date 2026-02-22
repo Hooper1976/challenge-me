@@ -102,8 +102,13 @@
             const listDiv = document.getElementById('friend-list');
             if(fships && fships.length > 0) {
                 const ids = fships.map(f => f.user_id_2);
-                const { data: profiles } = await sup.from('profiles').select('username').in('id', ids);
-                listDiv.innerHTML = profiles.map(p => `<div class="user-row" style="border:none"><span>🟢 ${p.username}</span></div>`).join('');
+                const { data: profiles } = await sup.from('profiles').select('id, username').in('id', ids);
+                listDiv.innerHTML = profiles.map(p => `
+                    <div class="user-row" style="border:none; cursor:pointer" onclick="window.location.href='friend_profile.html?id=${p.id}'">
+                        <span>🟢 ${p.username}</span>
+                        <span style="font-size:10px; opacity:0.5">PROFIL ></span>
+                    </div>
+                `).join('');
             }
         }
         init();

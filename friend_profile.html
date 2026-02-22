@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Freund-Profil - Challenge Me</title>
+    <style>
+        body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; text-align: center; }
+        .card { background: #062d24; padding: 25px; border-radius: 25px; border: 1px solid #064e3b; margin-top: 20px; }
+        .avatar-large { width: 90px; height: 90px; background: #059669; border-radius: 25px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 35px; color: white; box-shadow: 0 0 15px rgba(16,185,129,0.2); }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .stat-item { background: #061c14; padding: 15px; border-radius: 15px; border: 1px solid #064e3b; }
+        .stat-val { font-size: 20px; font-weight: 900; color: white; display: block; }
+        .stat-lbl { font-size: 10px; uppercase; opacity: 0.6; }
+        .btn-chat { width: 100%; padding: 18px; background: #10b981; color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 16px; min-width: 200px; cursor: pointer; text-transform: uppercase; margin-top: 25px; }
+        .quest-item { background: rgba(16,185,129,0.1); padding: 10px; border-radius: 10px; margin-top: 5px; font-size: 12px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div style="text-align: left;"><a href="friends.html" style="color:#10b981; text-decoration:none;">← ZURÜCK</a></div>
+    
+    <div id="loading">Lädt Profil...</div>
+    
+    <div id="content" style="display:none">
+        <div class="card">
+            <div class="avatar-large" id="fAvatar">?</div>
+            <h2 id="fName" style="margin:0; color: white;">Username</h2>
+            <p id="fSince" style="font-size: 11px; opacity: 0.5;">Dabei seit: --</p>
+            
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <span class="stat-val" id="fPoints">0</span>
+                    <span class="stat-lbl">GESAMTE PUNKTE</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-val" id="fQuests">0</span>
+                    <span class="stat-lbl">QUESTS ERLEDIGT</span>
+                </div>
+            </div>
+
+            <h3 style="font-size: 14px; margin-top: 30px; text-align: left; opacity: 0.8;">LETZTE ERFOLGE</h3>
+            <div id="fList">Keine Quests bisher.</div>
+            
+            <button id="chatBtn" class="btn-chat">NACHRICHT SCHREIBEN 💬</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
+        
+        async function run() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const friendId = urlParams.get('id');
+            if(!friendId) return window.location.href = 'friends.html';
+
+            // Profil-Daten laden
+            const { data: p } = await sup.from('profiles').select('*').eq('id', friendId).single();
+            if(!p) return alert("User nicht gefunden.");
+
+            document.getElementById('fName').innerText = p.username;
+            document.getElementById('fAvatar').innerText = p.username[0].toUpperCase();
+            document.getElementById('fPoints').innerText = p.total_points || 0;
+            
+            const date = new Date(p.created_at).toLocaleDateString('de-DE');
+            document.getElementById('fSince').innerText = "Dabei seit: " + date;
+
+            // In dieser Phase laden wir einfach 0 erledigte Quests, 
+            // bis wir die 'completed_quests' Tabelle scharf schalten.
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+
+            document.getElementById('chatBtn').onclick = () => {
+                // Direkt zum Chat und den Freund vorauswählen
+                window.location.href = 'chat.html?id=' + friendId;
+            };
+        }
+        run();
+    </script>
+</body>
+</html>
