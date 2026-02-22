@@ -9,10 +9,18 @@
         h1 { font-style: italic; font-size: 24px; color: #10b981; margin: 0; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #064e3b; padding-bottom: 15px; }
         .logout { color: #059669; text-decoration: none; font-size: 11px; font-weight: bold; border: 1px solid #064e3b; padding: 5px 8px; border-radius: 8px; }
-        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .card:active { transform: scale(0.98); background: #063d34; }
         .card h3 { margin: 0; font-size: 18px; color: white; }
         .card p { margin: 5px 0 0; font-size: 12px; color: #10b981; opacity: 0.7; }
         .pts { font-weight: 900; color: #10b981; font-size: 20px; }
+        
+        /* Modal für Challenge Abschluss */
+        #questModal { position: fixed; inset: 0; background: rgba(6, 28, 20, 0.95); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+        .modal-card { background: #062d24; padding: 30px; border-radius: 25px; border: 2px solid #10b981; width: 100%; max-width: 320px; }
+        .btn-upload { background: #10b981; color: white; padding: 15px; border-radius: 12px; width: 100%; border: none; font-weight: bold; margin-top: 20px; }
+        .close-modal { color: #ef4444; margin-top: 20px; font-size: 14px; font-weight: bold; cursor: pointer; }
+
         .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .nav a { color: white; font-size: 24px; text-decoration: none; position: relative; }
         .plus-btn { background: white; color: #10b981; width: 50px; height: 50px; border-radius: 25px; display: flex; align-items: center; justify-content: center; margin-top: -35px; border: 4px solid #061c14; font-size: 28px; font-weight: bold; }
@@ -36,6 +44,19 @@
     <h2 style="font-size: 14px; margin-top: 30px; text-transform: uppercase;">🔥 Quests für dich:</h2>
     <div id="list">Suche...</div>
 
+    <!-- Modal für Upload -->
+    <div id="questModal">
+        <div class="modal-card">
+            <h2 id="modalTitle" style="color:white; margin:0;">Titel</h2>
+            <p id="modalDesc" style="font-size:12px; margin-top:10px;">Beschreibung...</p>
+            <div id="uploadStatus" style="font-size:10px; margin-top:10px; color:#facc15"></div>
+            
+            <input type="file" id="fileInput" accept="image/*" style="display:none">
+            <button class="btn-upload" onclick="document.getElementById('fileInput').click()">FOTO / BEWEIS MACHEN 📸</button>
+            <div class="close-modal" onclick="closeModal()">ABBRECHEN</div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <div class="nav">
         <a href="dashboard.html">🏠</a>
@@ -48,42 +69,69 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
-        
+        let activeQuestId = null;
+        let myId = null;
+
         async function run() {
             const { data: { session } } = await sup.auth.getSession();
             if(!session) { window.location.href = 'index.html'; return; }
-            const myId = session.user.id;
+            myId = session.user.id;
             
             const { data: profile } = await sup.from('profiles').select('username').eq('id', myId).single();
             document.getElementById('user').innerText = "Yo, " + (profile?.username || session.user.email.split('@')[0]);
 
-            // UNREAD MESSAGES CHECK
-            const { count: unread } = await sup.from('messages')
-                .select('*', { count: 'exact', head: true })
-                .eq('receiver_id', myId)
-                .eq('is_read', false);
-            
-            if(unread > 0) {
-                const badge = document.getElementById('unreadCount');
-                badge.innerText = unread > 9 ? '9+' : unread;
-                badge.style.display = 'block';
-            }
+            // Unread Badge Check
+            const { count: unread } = await sup.from('messages').select('*', {count: 'exact', head:true}).eq('receiver_id', myId).eq('is_read', false);
+            if(unread > 0) { document.getElementById('unreadCount').innerText = unread; document.getElementById('unreadCount').style.display='block'; }
 
+            // Challenges laden
             const { data: quests } = await sup.from('challenges').select('*');
             const list = document.getElementById('list');
             if(quests && quests.length > 0) {
                 list.innerHTML = '';
                 quests.forEach(q => {
-                    list.innerHTML += `<div class="card"><div><h3>${q.title}</h3><p>${q.description}</p></div><div class="pts">${q.points}</div></div>`;
+                    list.innerHTML += `
+                        <div class="card" onclick="openQuest('${q.id}', '${q.title}', '${q.description}')">
+                            <div>
+                                <h3>${q.title}</h3>
+                                <p>${q.description}</p>
+                            </div>
+                            <div class="pts">${q.points}</div>
+                        </div>`;
                 });
             }
+        }
+
+        function openQuest(id, title, desc) {
+            activeQuestId = id;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('questModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('questModal').style.display = 'none';
+        }
+
+        document.getElementById('fileInput').onchange = async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
             
-            // Check for private challenges (Pop-up)
-            const { data: priv } = await sup.from('user_challenges').select('*, profiles!user_challenges_creator_id_fkey(username)').eq('target_id', myId).eq('status', 'pending').limit(1);
-            if(priv && priv.length > 0) {
-                alert("🔥 NEUE CHALLENGE!\n" + priv[0].profiles.username + " fordert dich heraus: " + priv[0].title);
+            const status = document.getElementById('uploadStatus');
+            status.innerText = "BEWEIS WIRD HOCHGELADEN...";
+            
+            const fileName = `proofs/${myId}_${activeQuestId}_${Date.now()}.jpg`;
+            const { data, error } = await sup.storage.from('app_assets').upload(fileName, file);
+            
+            if(error) {
+                alert("Upload Fehler: " + error.message);
+                status.innerText = "";
+            } else {
+                alert("Super! Dein Beweis wurde eingereicht. Der Admin prüft das jetzt! ⚡");
+                closeModal();
             }
         }
+
         document.getElementById('lo').onclick = async () => { await sup.auth.signOut(); window.location.href = 'index.html'; };
         run();
     </script>
