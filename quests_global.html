@@ -5,45 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Globale Quests - Challenge Me</title>
     <style>
-        body { background: #000; color: white; font-family: 'Arial Black', sans-serif; margin: 0; padding-bottom: 100px; }
-        header { padding: 20px; text-align: center; border-bottom: 2px solid #edff00; background: #000; position: sticky; top: 0; z-index: 1000; }
-        .back-btn { position: absolute; left: 20px; top: 25px; color: #edff00; text-decoration: none; font-size: 14px; font-weight: bold; }
+        body { background: #000; color: #d1fae5; font-family: 'Arial Black', sans-serif; margin: 0; padding-bottom: 110px; }
+        .overlay-dark { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: -1; }
         
-        .quest-card { position: relative; margin: 20px; border-radius: 20px; overflow: hidden; height: 200px; border: 1px solid rgba(237,255,0,0.3); }
+        /* HEADER MIT LOGO */
+        header { 
+            display: flex; flex-direction: column; align-items: center; 
+            padding: 20px; background: #000; 
+            border-bottom: 2px solid #edff00;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo-container { display: flex; align-items: center; gap: 10px; }
+        .logo-icon { width: 35px; height: 35px; background: #edff00; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: black; font-weight: 900; }
+        .logo-text { font-size: 18px; font-weight: 900; color: #edff00; text-transform: uppercase; font-style: italic; }
+
+        .back-btn { position: absolute; left: 15px; top: 25px; color: #edff00; text-decoration: none; font-size: 12px; font-weight: bold; border: 1px solid #edff00; padding: 5px 10px; border-radius: 8px; }
+
+        .section-title { font-size: 14px; font-weight: 900; text-transform: uppercase; margin: 25px 20px 15px; color: #edff00; text-align: left; }
+
+        /* QUEST CARDS */
+        .quest-card { position: relative; margin: 0 20px 15px; border-radius: 20px; overflow: hidden; height: 200px; border: 1px solid rgba(237,255,0,0.3); }
         .quest-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
         .quest-info { position: absolute; inset: 0; padding: 20px; display: flex; flex-direction: column; justify-content: flex-end; text-align: left; }
-        .quest-title { font-size: 20px; font-weight: 900; color: #edff00; font-style: italic; }
-        .quest-xp { background: #edff00; color: black; padding: 3px 10px; border-radius: 5px; font-size: 12px; font-weight: 900; margin-top: 5px; width: fit-content; }
-        
+        .quest-title { font-size: 20px; font-weight: 900; color: white; font-style: italic; margin-bottom: 5px; }
+        .quest-xp { background: #edff00; color: black; padding: 3px 10px; border-radius: 5px; font-size: 12px; font-weight: 900; width: fit-content; }
+
+        /* MODAL */
         #questModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .modal-card { background: #111; border: 2px solid #edff00; border-radius: 25px; padding: 30px; width: 100%; max-width: 340px; text-align: center; }
-        .btn-action { width: 100%; padding: 18px; border-radius: 15px; border: none; background: #edff00; color: black; font-weight: 900; font-size: 16px; cursor: pointer; margin-top: 20px; }
-        .close-link { color: #ef4444; margin-top: 20px; display: block; font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: underline; }
+        .btn-action { width: 100%; padding: 18px; border-radius: 15px; border: none; background: #edff00; color: black; font-weight: 900; font-size: 16px; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
+
+        /* FOOTER NAV */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; right: 0; height: 85px;
+            background: rgba(0,0,0,0.95); display: flex; justify-content: space-around; align-items: center;
+            border-top: 1px solid #edff00; z-index: 1000; padding-bottom: 15px;
+        }
+        .nav-link { text-decoration: none; display: flex; flex-direction: column; align-items: center; color: #edff00; font-size: 9px; font-weight: 900; text-transform: uppercase; }
+        .nav-icon { width: 32px; height: 32px; border-radius: 8px; background-size: cover; border: 1px solid rgba(237,255,0,0.4); margin-bottom: 5px; filter: grayscale(0.6); }
+        .active .nav-icon { filter: grayscale(0); border-color: #edff00; }
     </style>
 </head>
 <body>
     <header>
-        <a href="dashboard.html" class="back-btn">← ZURÜCK</a>
-        <h1 style="margin:0; font-size: 18px; color: #edff00;">GLOBALE QUESTS</h1>
+        <a href="dashboard.html" class="back-btn">BACK</a>
+        <div class="logo-container">
+            <div class="logo-icon">⚡</div>
+            <div class="logo-text">Challenge-Me</div>
+        </div>
     </header>
 
-    <div id="list">Lade Welt-Challenges...</div>
+    <div class="section-title">🔥 Aktuelle Welt-Quests</div>
+    <div id="list"></div>
 
     <div id="questModal">
         <div class="modal-card">
             <h2 id="mTitle" style="color:#edff00; margin-top:0;">Quest</h2>
-            <p id="mDesc" style="font-family: sans-serif; font-size:14px; opacity:0.8; line-height:1.4;"></p>
+            <p id="mDesc" style="font-family: sans-serif; font-size:14px; opacity:0.8; line-height:1.4; color: white;"></p>
             <input type="file" id="camInput" accept="image/*" style="display:none">
             <button class="btn-action" onclick="document.getElementById('camInput').click()">BEWEIS-FOTO MACHEN 📸</button>
-            <span class="close-link" onclick="closeM()">ABBRECHEN</span>
+            <span onclick="document.getElementById('questModal').style.display='none'" style="color:#ef4444; margin-top:20px; display:block; cursor:pointer; font-weight:bold;">SCHLIESSEN</span>
         </div>
     </div>
+
+    <!-- Menü -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-link active">
+            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=100&q=80');"></div>
+            <span>Home</span>
+        </a>
+        <a href="rewards.html" class="nav-link">
+            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=100&q=80');"></div>
+            <span>Rewards</span>
+        </a>
+        <a href="create_challenge.html" class="nav-link">
+            <div class="nav-icon" style="background-size: cover; border-radius: 50%; width: 50px; height: 50px; margin-top: -45px; border: 3px solid #edff00; background-image: url('https://images.unsplash.com/photo-1541571440-2051e0413009?auto=format&fit=crop&w=100&q=80');"></div>
+            <span>Quest</span>
+        </a>
+        <a href="friends.html" class="nav-link">
+            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=100&q=80');"></div>
+            <span>Freunde</span>
+        </a>
+        <a href="profile.html" class="nav-link">
+            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80');"></div>
+            <span>Profil</span>
+        </a>
+    </nav>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
-        let activeQId;
-
         async function init() {
             const { data: quests } = await sup.from('challenges').select('*');
             const list = document.getElementById('list');
@@ -54,27 +105,13 @@
                         <div class="quest-title">${q.title}</div>
                         <div class="quest-xp">${q.points} XP</div>
                     </div>
-                </div>
-            `).join('');
+                </div>`).join('');
         }
-
         function openM(id, t, d) {
-            activeQId = id;
             document.getElementById('mTitle').innerText = t;
             document.getElementById('mDesc').innerText = d;
             document.getElementById('questModal').style.display = 'flex';
         }
-
-        function closeM() { document.getElementById('questModal').style.display = 'none'; }
-
-        document.getElementById('camInput').onchange = async (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
-            alert("Beweis wird hochgeladen...");
-            // Upload Logik wie gehabt...
-            closeM();
-        }
-
         init();
     </script>
 </body>
