@@ -3,36 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Profil - Challenge Me</title>
+    <title>Mein Archiv - Challenge Me</title>
     <style>
         body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; text-align: center; }
-        .card { background: #062d24; padding: 25px; border-radius: 25px; border: 1px solid #064e3b; margin-top: 20px; }
-        .avatar-large { width: 100px; height: 100px; background: #10b981; border-radius: 30px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; box-shadow: 0 0 20px rgba(16,185,129,0.3); }
-        input { width: 100%; padding: 15px; background: #061c14; border: 2px solid #064e3b; border-radius: 15px; color: white; font-size: 18px; margin-bottom: 20px; text-align: center; font-weight: bold; }
-        input:focus { border-color: #10b981; outline: none; }
-        .btn-save { width: 100%; padding: 18px; background: #10b981; color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; }
-        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; }
+        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-top: 20px; }
+        .avatar-large { width: 80px; height: 80px; background: #10b981; border-radius: 25px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white; box-shadow: 0 0 15px rgba(16,185,129,0.3); }
+        h2 { color: white; margin: 0; font-size: 20px; }
+        
+        /* Timeline Styles */
+        .timeline { margin-top: 40px; text-align: left; }
+        .timeline-header { font-size: 14px; font-weight: 900; text-transform: uppercase; color: #facc15; border-bottom: 1px solid #064e3b; padding-bottom: 10px; margin-bottom: 20px; }
+        .memory-card { background: #062d24; border-radius: 20px; border: 1px solid #064e3b; overflow: hidden; margin-bottom: 25px; }
+        .memory-img { width: 100%; max-height: 250px; object-fit: cover; background: #061c14; }
+        .memory-content { padding: 15px; }
+        .memory-title { color: white; font-weight: bold; font-size: 16px; margin-bottom: 5px; }
+        .memory-text { color: #d1fae5; font-size: 13px; line-height: 1.4; opacity: 0.8; }
+        .memory-date { font-size: 10px; color: #059669; margin-top: 10px; font-weight: bold; }
+
+        .btn-edit { background: none; border: 1px solid #064e3b; color: #10b981; padding: 8px 15px; border-radius: 10px; font-size: 12px; margin-top: 10px; }
+        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; }
         .nav a { color: white; font-size: 24px; text-decoration: none; }
     </style>
 </head>
 <body>
-    <div style="text-align: left;"><a href="dashboard.html" style="color:#10b981; text-decoration:none;">← ZURÜCK</a></div>
+    <div style="text-align: right;"><a href="#" id="lo" style="color:#ef4444; font-size: 12px; text-decoration:none; font-weight:bold;">LOGOUT</a></div>
     
     <div class="card">
-        <div class="avatar-large" id="avatarIcon">👤</div>
-        <h2 style="margin-top:0; color: white;">Dein Profil</h2>
-        <p style="font-size: 12px; color: #059669; font-weight: bold;">WÄHLE DEINEN USERNAMEN</p>
-        
-        <input type="text" id="username" placeholder="z.B. KingChallenge">
-        <button id="saveBtn" class="btn-save">SPEICHERN 💾</button>
-        
-        <p id="info" style="font-size: 11px; margin-top: 15px; opacity: 0.6;">Diesen Namen sehen deine Freunde,</p>
-        <p style="font-size: 11px; opacity: 0.6;">wenn sie dich suchen.</p>
+        <div class="avatar-large" id="myAvatar">?</div>
+        <h2 id="myName">Lade...</h2>
+        <p style="font-size: 11px; color:#059669; font-weight:bold;">USER PROFIL & ARCHIV</p>
+        <button class="btn-edit" onclick="changeName()">NAME ÄNDERN ⚙️</button>
+    </div>
+
+    <!-- TIMELINE DER ERFOLGE -->
+    <div class="timeline">
+        <div class="timeline-header">🏆 MEINE ERFOLGE</div>
+        <div id="memoryList">Suche abgeschlossene Challenges...</div>
     </div>
 
     <div class="nav">
         <a href="dashboard.html">🏠</a>
         <a href="rewards.html">🎁</a>
+        <a href="create_challenge.html" style="background:white; color:#10b981; width:50px; height:50px; border-radius:25px; display:flex; align-items:center; justify-content:center; margin-top:-35px; border:4px solid #061c14; font-weight:bold;">+</a>
         <a href="friends.html">👥</a>
         <a href="profile.html">👤</a>
     </div>
@@ -41,35 +53,52 @@
     <script>
         const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
         
-        async function loadProfile() {
+        async function loadArchive() {
             const { data: { session } } = await sup.auth.getSession();
-            if(!session) { window.location.href = 'index.html'; return; }
+            if(!session) return window.location.href = 'index.html';
 
-            const { data: profile } = await sup.from('profiles').select('username').eq('id', session.user.id).single();
-            if(profile && profile.username) {
-                document.getElementById('username').value = profile.username;
-                document.getElementById('avatarIcon').innerText = profile.username[0].toUpperCase();
-            }
+            const { data: myProfile } = await sup.from('profiles').select('username').eq('id', session.user.id).single();
+            const username = myProfile?.username || "Challenger";
+            document.getElementById('myName').innerText = username;
+            document.getElementById('myAvatar').innerText = username[0].toUpperCase();
 
-            document.getElementById('saveBtn').onclick = async () => {
-                const newName = document.getElementById('username').value.trim();
-                if(newName.length < 3) { alert("Name zu kurz!"); return; }
+            // Lade alle erledigten Challenges (Privat)
+            const { data: memories } = await sup.from('user_challenges')
+                .select('*')
+                .eq('target_name', username)
+                .eq('status', 'completed')
+                .order('created_at', { ascending: false });
 
-                const { error } = await sup.from('profiles').upsert({ 
-                    id: session.user.id, 
-                    username: newName,
-                    updated_at: new Date()
+            const list = document.getElementById('memoryList');
+            if(memories && memories.length > 0) {
+                list.innerHTML = '';
+                memories.forEach(m => {
+                    list.innerHTML += `
+                        <div class="memory-card">
+                            ${m.media_url ? `<img src="${m.media_url}" class="memory-img">` : ''}
+                            <div class="memory-content">
+                                <div class="memory-title">${m.title}</div>
+                                <div class="memory-text">${m.proof_text || 'Kein Bericht vorhanden.'}</div>
+                                <div class="memory-date">VON: ${m.creator_name} | ${new Date(m.created_at).toLocaleDateString('de-DE')}</div>
+                            </div>
+                        </div>`;
                 });
-
-                if(error) {
-                    alert("Name evtl. schon vergeben? " + error.message);
-                } else {
-                    alert("Profil aktualisiert! ✨");
-                    location.reload();
-                }
-            };
+            } else {
+                list.innerHTML = "<p style='font-size:12px; opacity:0.4; text-align:center;'>Noch keine Erinnerungen vorhanden. Schließe deine erste Challenge ab!</p>";
+            }
         }
-        loadProfile();
+
+        async function changeName() {
+            const newN = prompt("Wähle einen neuen Usernamen:");
+            if(newN) {
+                const { data: { session } } = await sup.auth.getSession();
+                await sup.from('profiles').upsert({ id: session.user.id, username: newN });
+                location.reload();
+            }
+        }
+
+        document.getElementById('lo').onclick = async () => { await sup.auth.signOut(); window.location.href = 'index.html'; };
+        loadArchive();
     </script>
 </body>
 </html>
