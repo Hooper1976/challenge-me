@@ -2,47 +2,76 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin - Challenge Me</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin-Hub - Challenge Me</title>
     <style>
-        body { background: #022c22; color: #10b981; font-family: sans-serif; padding: 20px; text-align: center; }
-        .admin-box { background: #064e4b; padding: 30px; border-radius: 20px; border: 2px solid #10b981; max-width: 400px; margin: 0 auto; }
-        h1 { color: #facc15; font-size: 24px; text-transform: uppercase; margin-top: 0; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: none; background: #022c22; color: white; font-size: 16px; box-sizing: border-box; }
-        label { display: block; text-align: left; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
-        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #facc15; color: black; font-weight: bold; font-size: 16px; cursor: pointer; text-transform: uppercase; }
-        #auth-lock { position: fixed; inset: 0; background: #061c14; z-index: 100; display: flex; align-items: center; justify-content: center; }
+        body { background: #022c22; color: #10b981; font-family: sans-serif; margin: 0; display: flex; }
+        .sidebar { width: 250px; background: #061c14; height: 100vh; padding: 20px; border-right: 1px solid #10b981; }
+        .main { flex: 1; padding: 40px; overflow-y: auto; height: 100vh; }
+        h1 { color: #facc15; font-size: 22px; text-transform: uppercase; margin-bottom: 30px; }
+        .menu-btn { display: block; width: 100%; padding: 15px; background: none; border: 1px solid #064e3b; color: white; text-align: left; margin-bottom: 5px; cursor: pointer; border-radius: 10px; }
+        .menu-btn.active { background: #10b981; color: black; font-weight: bold; border: none; }
+        
+        .card { background: #064e4b; padding: 25px; border-radius: 20px; border: 1px solid #10b981; margin-bottom: 20px; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #022c22; color: white; border: 1px solid #064e3b; border-radius: 8px; }
+        button.action { background: #facc15; color: black; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { text-align: left; color: #facc15; border-bottom: 2px solid #10b981; padding: 10px; }
+        td { padding: 10px; border-bottom: 1px solid #064e3b; color: white; font-size: 14px; }
+        .user-action { color: #facc15; cursor: pointer; text-decoration: underline; margin-right: 10px; }
+        
+        #auth-lock { position: fixed; inset: 0; background: #061c14; z-index: 200; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-    <!-- Passwort Sperre -->
     <div id="auth-lock">
-        <div class="admin-box">
-            <h1>Admin Login</h1>
-            <input type="password" id="master-pw" placeholder="Master Passwort">
-            <button onclick="checkPw()">ZUTRITT GEWÄHREN</button>
+        <div style="background: #064e4b; padding: 40px; border-radius: 30px; text-align: center; border: 2px solid #10b981;">
+            <h1>Admin Hub v2</h1>
+            <input type="password" id="master-pw" placeholder="Passwort">
+            <button class="action" onclick="checkPw()">LOGIN</button>
         </div>
     </div>
 
-    <!-- Admin Panel -->
-    <div class="admin-box">
-        <h1>Challenge Editor</h1>
-        <p style="color:white; font-size: 12px; margin-bottom: 20px;">Neue globale Quest hinzufügen</p>
-        
-        <label>Titel der Aufgabe</label>
-        <input type="text" id="q-title" placeholder="z.B. Eisbaden gehen">
-        
-        <label>Beschreibung</label>
-        <textarea id="q-desc" rows="3" placeholder="Was genau muss man tun?"></textarea>
-        
-        <label>Punkte (XP)</label>
-        <input type="number" id="q-points" value="100">
-        
-        <button id="q-btn" onclick="saveQuest()">QUEST VERÖFFENTLICHEN 🚀</button>
-        
-        <div style="margin-top: 30px; border-top: 1px solid #10b981; padding-top: 20px;">
-            <a href="dashboard.html" style="color: #10b981; text-decoration: none; font-size: 14px;">ZURÜCK ZUR APP</a>
+    <div class="sidebar">
+        <h1>CHALLENGE ADMIN</h1>
+        <button id="btn-u" class="menu-btn active" onclick="show('users')">👥 User Verwaltung</button>
+        <button id="btn-c" class="menu-btn" onclick="show('quests')">🔥 Challenge Editor</button>
+        <button id="btn-r" class="menu-btn" onclick="show('rewards')">🎁 Belohnungen</button>
+        <div style="height:30px"></div>
+        <a href="dashboard.html" style="color:#d1fae5; font-size: 12px;">ZUR APP</a>
+    </div>
+
+    <div class="main">
+        <!-- USER VERWALTUNG -->
+        <div id="sec-users" class="section">
+            <h2>User Verwaltung</h2>
+            <div id="user-list">Lade User...</div>
+        </div>
+
+        <!-- CHALLENGE EDITOR -->
+        <div id="sec-quests" class="section" style="display:none">
+            <h2>Herausforderungen</h2>
+            <div class="card">
+                <input type="text" id="q-title" placeholder="Titel der Challenge">
+                <textarea id="q-desc" placeholder="Beschreibung"></textarea>
+                <input type="number" id="q-points" placeholder="Punkte">
+                <button class="action" onclick="saveQuest()">VERÖFFENTLICHEN</button>
+            </div>
+        </div>
+
+        <!-- REWARDS EDITOR -->
+        <div id="sec-rewards" class="section" style="display:none">
+            <h2>Belohnungen & Preise</h2>
+            <div class="card">
+                <input type="text" id="r-title" placeholder="z.B. 10€ Gutschein McDonalds">
+                <input type="text" id="r-provider" placeholder="Anbieter (z.B. McDonalds)">
+                <input type="number" id="r-cost" placeholder="Kosten in Punkten">
+                <input type="text" id="r-img" placeholder="Bild-URL (z.B. von unsplash.com)">
+                <button class="action" onclick="saveReward()">BELOHNUNG ANLEGEN</button>
+            </div>
+            <div id="reward-list"></div>
         </div>
     </div>
 
@@ -51,39 +80,64 @@
         const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
         
         function checkPw() {
-            const pw = document.getElementById('master-pw').value;
-            // Dein Master Passwort
-            if (pw === "ChallengeAdmin2026!") {
-                document.getElementById('auth-lock').style.display = 'none';
-            } else {
-                alert("Passwort falsch!");
-            }
+            if(document.getElementById('master-pw').value === "ChallengeAdmin2026!") {
+                document.getElementById('auth-lock').style.display='none';
+                loadUsers();
+            } else { alert("Falsch!"); }
+        }
+
+        function show(s) {
+            document.querySelectorAll('.section').forEach(x => x.style.display='none');
+            document.getElementById('sec-'+s).style.display='block';
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            if(s==='users') { document.getElementById('btn-u').classList.add('active'); loadUsers(); }
+            if(s==='quests') { document.getElementById('btn-c').classList.add('active'); }
+            if(s==='rewards') { document.getElementById('btn-r').classList.add('active'); loadRewards(); }
+        }
+
+        async function loadUsers() {
+            const { data: users } = await sup.from('profiles').select('*');
+            let html = `<table><tr><th>Username</th><th>Punkte</th><th>Aktion</th></tr>`;
+            users.forEach(u => {
+                html += `<tr><td>${u.username}</td><td>${u.total_points}</td>
+                    <td><span class="user-action" onclick="modUser('${u.id}', 100)">+100 Pkt</span>
+                        <span class="user-action" onclick="modUser('${u.id}', -100)">-100 Pkt</span></td></tr>`;
+            });
+            document.getElementById('user-list').innerHTML = html + "</table>";
+        }
+
+        async function modUser(id, pts) {
+            const { data } = await sup.from('profiles').select('total_points').eq('id', id).single();
+            await sup.from('profiles').update({ total_points: data.total_points + pts }).eq('id', id);
+            loadUsers();
         }
 
         async function saveQuest() {
-            const title = document.getElementById('q-title').value;
-            const desc = document.getElementById('q-desc').value;
-            const points = document.getElementById('q-points').value;
-            const btn = document.getElementById('q-btn');
+            const t = document.getElementById('q-title').value;
+            const d = document.getElementById('q-desc').value;
+            const p = document.getElementById('q-points').value;
+            await sup.from('challenges').insert([{title:t, description:d, points:parseInt(p)}]);
+            alert("Erfolg!");
+        }
 
-            if(!title || !desc) { alert("Bitte alles ausfüllen!"); return; }
+        async function saveReward() {
+            const t = document.getElementById('r-title').value;
+            const pr = document.getElementById('r-provider').value;
+            const c = document.getElementById('r-cost').value;
+            const i = document.getElementById('r-img').value;
+            await sup.from('rewards').insert([{title:t, provider:pr, points_cost:parseInt(c), image_url:i}]);
+            alert("Sponsor Belohnung angelegt!");
+            loadRewards();
+        }
 
-            btn.disabled = true;
-            btn.innerText = "LÄDT HOCH...";
-
-            const { error } = await sup.from('challenges').insert([
-                { title: title, description: desc, points: parseInt(points) }
-            ]);
-
-            if (error) {
-                alert("Fehler: " + error.message);
-            } else {
-                alert("FERTIG! Die Challenge ist jetzt für alle User live.");
-                document.getElementById('q-title').value = '';
-                document.getElementById('q-desc').value = '';
-            }
-            btn.disabled = false;
-            btn.innerText = "QUEST VERÖFFENTLICHEN 🚀";
+        async function loadRewards() {
+            const { data: rewards } = await sup.from('rewards').select('*');
+            let html = "<div style='display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;'>";
+            rewards.map(r => {
+                html += `<div class='card' style='margin:0'><img src='${r.image_url}' style='width:100%;height:80px;object-cover;border-radius:10px;margin-bottom:10px'>
+                    <div style='font-weight:bold'>${r.title}</div><div style='color:#facc15'>${r.points_cost} PKT</div></div>`;
+            });
+            document.getElementById('reward-list').innerHTML = html + "</div>";
         }
     </script>
 </body>
