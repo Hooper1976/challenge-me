@@ -8,14 +8,14 @@
         body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; }
         h1 { font-style: italic; font-size: 24px; color: #10b981; margin: 0; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #064e3b; padding-bottom: 15px; }
-        .logout { color: #059669; text-decoration: none; font-size: 14px; font-weight: bold; border: 1px solid #064e3b; padding: 5px 10px; border-radius: 8px; }
+        .logout { color: #059669; text-decoration: none; font-size: 11px; font-weight: bold; border: 1px solid #064e3b; padding: 5px 8px; border-radius: 8px; }
         .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .card h3 { margin: 0; font-size: 18px; color: white; }
-        .card p { margin: 5px 0 0; font-size: 12px; color: #10b981; }
+        .card p { margin: 5px 0 0; font-size: 12px; color: #10b981; opacity: 0.7; }
         .pts { font-weight: 900; color: #10b981; font-size: 20px; }
-        #status { font-size: 12px; color: #059669; text-align: center; margin-top: 20px; }
-        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; }
-        .nav a { color: white; font-weight: bold; text-decoration: none; font-size: 20px; }
+        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .nav a { color: white; font-size: 24px; text-decoration: none; }
+        .plus-btn { background: white; color: #10b981; width: 50px; height: 50px; border-radius: 25px; display: flex; align-items: center; justify-content: center; margin-top: -35px; border: 4px solid #061c14; font-size: 28px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -24,19 +24,18 @@
         <a href="#" id="lo" class="logout">LOGOUT</a>
     </header>
 
-    <div id="user">Lade Profil...</div>
-    <h2 style="font-size: 16px; margin-top: 30px; text-transform: uppercase;">Deine Quests:</h2>
-    <div id="list">Suche Aufgaben...</div>
+    <div id="user" style="font-weight:bold; font-size:14px">Lade...</div>
+    
+    <h2 style="font-size: 14px; margin-top: 30px; text-transform: uppercase;">🔥 Quests für dich:</h2>
+    <div id="list">Suche...</div>
 
-    <div id="status">System: Synchronisiert</div>
-
-    <!-- Navigation Platzhalter -->
-    <div style="height: 100px;"></div>
+    <!-- Navigation -->
     <div class="nav">
         <a href="dashboard.html">🏠</a>
         <a href="rewards.html">🎁</a>
-        <a href="ranking.html" style="opacity:0.3">🏆</a>
-        <a href="create_challenge.html" style="opacity:0.3">➕</a>
+        <a href="create_challenge.html" class="plus-btn">+</a>
+        <a href="friends.html">👥</a>
+        <a href="profile.html">👤</a>
     </div>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -46,47 +45,26 @@
         async function run() {
             const { data: { session } } = await sup.auth.getSession();
             if(!session) { window.location.href = 'index.html'; return; }
-
-            // POPUP LOGIC: Prüfe auf neue Challenges
-            const { data: newQuests } = await sup.from('user_challenges')
-                .select('*, profiles!user_challenges_creator_id_fkey(username)')
-                .eq('target_id', session.user.id)
-                .eq('status', 'pending')
-                .limit(1);
-
-            if(newQuests && newQuests.length > 0) {
-                const q = newQuests[0];
-                alert("🔥 HERAUSFORDERUNG!\n" + q.profiles.username + " hat dich herausgefordert:\n\n" + q.title + "\n\nPreis: " + q.prize_text);
-                // Status auf 'seen' setzen damit es nicht bei jedem Load kommt
-            }
-
-            document.getElementById('user').innerText = "Servus, " + session.user.email;
-
-            const { data: quests, error } = await sup.from('challenges').select('*');
-            const list = document.getElementById('list');
             
+            const { data: profile } = await sup.from('profiles').select('username').eq('id', session.user.id).single();
+            document.getElementById('user').innerText = "Yo, " + (profile?.username || session.user.email.split('@')[0]);
+
+            const { data: quests } = await sup.from('challenges').select('*');
+            const list = document.getElementById('list');
             if(quests && quests.length > 0) {
                 list.innerHTML = '';
                 quests.forEach(q => {
-                    list.innerHTML += `
-                        <div class="card">
-                            <div>
-                                <h3>${q.title}</h3>
-                                <p>${q.description}</p>
-                            </div>
-                            <div class="pts">${q.points}</div>
-                        </div>`;
+                    list.innerHTML += `<div class="card"><div><h3>${q.title}</h3><p>${q.description}</p></div><div class="pts">${q.points}</div></div>`;
                 });
-            } else {
-                list.innerHTML = "<p style='color:grey'>Noch keine Quests in der Datenbank.</p>";
+            }
+            
+            // Check for private challenges (Pop-up)
+            const { data: priv } = await sup.from('user_challenges').select('*, profiles!user_challenges_creator_id_fkey(username)').eq('target_id', session.user.id).eq('status', 'pending').limit(1);
+            if(priv && priv.length > 0) {
+                alert("🔥 NEUE CHALLENGE!\n" + priv[0].profiles.username + " fordert dich heraus: " + priv[0].title);
             }
         }
-
-        document.getElementById('lo').onclick = async () => {
-            await sup.auth.signOut();
-            window.location.href = 'index.html';
-        };
-
+        document.getElementById('lo').onclick = async () => { await sup.auth.signOut(); window.location.href = 'index.html'; };
         run();
     </script>
 </body>
