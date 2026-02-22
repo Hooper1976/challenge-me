@@ -2,66 +2,48 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Challenge Me - Registrieren</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Challenge Me - Register</title>
     <style>
-        body { 
-            background-color: #061c14; 
-            color: white; 
-            font-family: 'Inter', sans-serif;
-            background-image: radial-gradient(circle at top right, #064e3b, #061c14);
-        }
-        .input-green:focus { border-color: #10b981; }
-        .gradient-green-btn { background: linear-gradient(90deg, #10b981 0%, #059669 100%); }
+        body { background: #061c14; color: #10b981; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
+        .box { background: #062d24; padding: 30px; border-radius: 20px; width: 100%; max-width: 320px; border: 1px solid #10b981; }
+        input { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #064e3b; background: #061c14; color: white; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #10b981; color: white; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 10px; }
+        .link { margin-top: 20px; display: block; color: #10b981; text-decoration: none; font-size: 14px; }
     </style>
 </head>
-<body class="max-w-md mx-auto min-h-screen flex flex-col justify-center px-8">
-    <div class="text-center mb-10">
-        <h1 class="text-3xl font-black italic text-emerald-400 uppercase tracking-tighter text-left mb-2">Join the Club</h1>
-        <p class="text-emerald-500/50 text-left text-sm uppercase font-bold tracking-widest">Werde Teil der Community</p>
-    </div>
-
-    <form id="regForm" class="space-y-4">
-        <div class="relative">
-            <input type="email" id="email" placeholder="Deine E-Mail" required 
-                   class="w-full bg-slate-900 border-2 border-emerald-900/50 rounded-2xl py-5 px-6 text-white font-bold outline-none input-green shadow-inner">
-        </div>
-        <div class="relative">
-            <input type="password" id="password" placeholder="Wähle ein Passwort" required 
-                   class="w-full bg-slate-900 border-2 border-emerald-900/50 rounded-2xl py-5 px-6 text-white font-bold outline-none input-green shadow-inner">
-        </div>
-        <button type="submit" id="regBtn" class="w-full py-5 rounded-2xl font-black text-white uppercase tracking-widest text-lg gradient-green-btn mt-4 shadow-xl shadow-emerald-900/20">
-            Account erstellen ⚡
-        </button>
-    </form>
-
-    <div class="mt-8 text-center">
-        <a href="index.html" class="text-emerald-500 font-bold text-sm underline">Zurück zum Login</a>
+<body>
+    <div class="box">
+        <h2 style="margin-top:0">Neues Konto</h2>
+        <form id="rForm">
+            <input type="email" id="e" placeholder="E-Mail" required>
+            <input type="password" id="p" placeholder="Passwort" required>
+            <button type="submit" id="btn">KONTO ERSTELLEN</button>
+        </form>
+        <a href="index.html" class="link">Zurück zum Login</a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = "https://pfvvpqljjfmyvtyiuibh.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4";
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const S_URL = "https://pfvvpqljjfmyvtyiuibh.supabase.co";
+        const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4";
+        const supabase = window.supabase.createClient(S_URL, S_KEY);
 
-        document.getElementById('regForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('regBtn');
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            btn.innerText = "Sende Daten...";
-            btn.disabled = true;
+        document.getElementById('rForm').onsubmit = async (event) => {
+            event.preventDefault();
+            const btn = document.getElementById('btn');
+            btn.innerText = "Sende...";
 
-            const { data, error } = await supabase.auth.signUp({ email, password });
+            const { data, error } = await supabase.auth.signUp({
+                email: document.getElementById('e').value,
+                password: document.getElementById('p').value
+            });
+
             if (error) {
                 alert("Fehler: " + error.message);
-                btn.innerText = "Account erstellen ⚡";
-                btn.disabled = false;
-            } else if (data.user) {
-                alert("WILLKOMMEN!\nDein Account wurde erstellt.\nMelde dich jetzt an.");
+                btn.innerText = "KONTO ERSTELLEN";
+            } else {
+                alert("ERFOLG! User ID: " + data.user.id);
                 window.location.href = 'index.html';
             }
         };
