@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shop - Challenge Me</title>
+    <style>
+        body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; }
+        h1 { font-style: italic; font-size: 24px; color: #10b981; margin: 0; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .score-badge { background: #062d24; border: 1px solid #10b981; padding: 10px 15px; border-radius: 12px; font-weight: 900; font-size: 18px; color: white; box-shadow: 0 0 15px rgba(16,185,129,0.2); }
+        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .reward-card { background: #062d24; border-radius: 20px; overflow: hidden; border: 1px solid #064e3b; position: relative; }
+        .reward-img { width: 100%; height: 160px; object-fit: cover; }
+        .reward-info { padding: 15px; }
+        .reward-title { color: white; font-weight: bold; font-size: 18px; margin-bottom: 5px; }
+        .reward-cost { font-weight: 900; color: #10b981; font-size: 14px; }
+        .progress-container { background: #061c14; height: 8px; border-radius: 4px; margin-top: 15px; overflow: hidden; }
+        .progress-bar { background: #10b981; height: 100%; transition: width 0.5s; box-shadow: 0 0 10px #10b981; }
+        .btn-claim { width: 100%; padding: 12px; background: #064e3b; color: #10b981; border: 1px solid #10b981; border-radius: 10px; margin-top: 10px; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+        .btn-ready { background: #10b981; color: white; border: none; }
+        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 100; }
+        .nav a { color: white; font-size: 24px; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <p style="margin:0; font-size: 10px; font-weight: bold; color: #059669;">DEIN KONTOSTAND</p>
+            <div id="score" class="score-badge">0 PKT</div>
+        </div>
+        <h1>REWARDS</h1>
+    </header>
+
+    <div id="reward-list" class="grid">
+        <p style="text-align:center; opacity:0.5">Lade Belohnungen...</p>
+    </div>
+
+    <div class="nav">
+        <a href="dashboard.html">🏠</a>
+        <a href="rewards.html">🎁</a>
+        <a href="ranking.html" style="opacity:0.3">🏆</a>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
+        
+        async function loadShop() {
+            // Get User Score
+            const { data: { session } } = await sup.auth.getSession();
+            if(!session) { window.location.href = 'index.html'; return; }
+            
+            const { data: profile } = await sup.from('profiles').select('total_points').eq('id', session.user.id).single();
+            const userPoints = profile ? profile.total_points : 0;
+            document.getElementById('score').innerText = userPoints + " PKT";
+
+            // Get Rewards
+            const { data: rewards } = await sup.from('rewards').select('*').eq('is_active', true);
+            const list = document.getElementById('reward-list');
+            
+            if(rewards && rewards.length > 0) {
+                list.innerHTML = '';
+                rewards.forEach(r => {
+                    const progress = Math.min(100, (userPoints / r.points_cost) * 100);
+                    const canAfford = userPoints >= r.points_cost;
+                    
+                    list.innerHTML += `
+                        <div class="reward-card">
+                            <img src="${r.image_url}" class="reward-img">
+                            <div class="reward-info">
+                                <div class="reward-title">${r.title}</div>
+                                <div class="reward-cost">${r.points_cost} PKT</div>
+                                <div class="progress-container">
+                                    <div class="progress-bar" style="width: ${progress}%"></div>
+                                </div>
+                                <button class="btn-claim ${canAfford ? 'btn-ready' : ''}">
+                                    ${canAfford ? 'JETZT EINLÖSEN ⚡' : 'NOCH ' + (r.points_cost - userPoints) + ' PKT NÖTIG'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                list.innerHTML = "<p style='text-align:center'>Aktuell keine Belohnungen verfügbar.</p>";
+            }
+        }
+
+        loadShop();
+    </script>
+</body>
+</html>
