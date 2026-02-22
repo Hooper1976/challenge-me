@@ -46,7 +46,20 @@
         async function run() {
             const { data: { session } } = await sup.auth.getSession();
             if(!session) { window.location.href = 'index.html'; return; }
-            
+
+            // POPUP LOGIC: Prüfe auf neue Challenges
+            const { data: newQuests } = await sup.from('user_challenges')
+                .select('*, profiles!user_challenges_creator_id_fkey(username)')
+                .eq('target_id', session.user.id)
+                .eq('status', 'pending')
+                .limit(1);
+
+            if(newQuests && newQuests.length > 0) {
+                const q = newQuests[0];
+                alert("🔥 HERAUSFORDERUNG!\n" + q.profiles.username + " hat dich herausgefordert:\n\n" + q.title + "\n\nPreis: " + q.prize_text);
+                // Status auf 'seen' setzen damit es nicht bei jedem Load kommt
+            }
+
             document.getElementById('user').innerText = "Servus, " + session.user.email;
 
             const { data: quests, error } = await sup.from('challenges').select('*');

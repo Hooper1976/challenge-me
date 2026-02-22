@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Freunde - Challenge Me</title>
+    <style>
+        body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; }
+        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-bottom: 15px; }
+        input { width: 100%; padding: 15px; background: #061c14; border: 1px solid #064e3b; border-radius: 12px; color: white; margin-bottom: 10px; }
+        .btn { padding: 10px 20px; background: #10b981; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #064e3b; }
+        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; }
+        .nav a { color: white; font-size: 24px; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>Freunde finden</h1>
+    <div class="card">
+        <input type="text" id="search" placeholder="Username suchen...">
+        <button class="btn" onclick="searchUser()">SUCHEN</button>
+    </div>
+    <div id="results"></div>
+
+    <h2 style="font-size: 16px; margin-top:30px;">Deine Kontakte</h2>
+    <div id="friend-list">Lade Freunde...</div>
+
+    <div class="nav">
+        <a href="dashboard.html">🏠</a>
+        <a href="rewards.html">🎁</a>
+        <a href="friends.html">👥</a>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
+        
+        async function searchUser() {
+            const query = document.getElementById('search').value;
+            const { data } = await sup.from('profiles').select('*').ilike('username', `%${query}%`);
+            const div = document.getElementById('results');
+            div.innerHTML = '';
+            data.forEach(u => {
+                div.innerHTML += `<div class="user-row"><span>${u.username}</span><button class="btn" onclick="addFriend('${u.id}')">HINZUFÜGEN</button></div>`;
+            });
+        }
+
+        async function addFriend(id) {
+            const { data: { session } } = await sup.auth.getSession();
+            await sup.from('friendships').insert([{ user_id_1: session.user.id, user_id_2: id, status: 'accepted' }]);
+            alert("Freund hinzugefügt!");
+            location.reload();
+        }
+
+        async function loadFriends() {
+            const { data: { session } } = await sup.auth.getSession();
+            // Vereinfachte Abfrage für den Test
+            const { data } = await sup.from('friendships').select('user_id_2').eq('user_id_1', session.user.id);
+            document.getElementById('friend-list').innerHTML = data.length > 0 ? `${data.length} Freunde online` : "Noch keine Freunde.";
+        }
+        loadFriends();
+    </script>
+</body>
+</html>
