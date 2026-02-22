@@ -89,10 +89,23 @@
 
         async function loadFriends() {
             const { data: { session } } = await sup.auth.getSession();
-            const { data } = await sup.from('friendships').select('user_id_2, profiles!friendships_user_id_2_fkey(username)').eq('user_id_1', session.user.id);
+            // Wir laden erst die IDs und dann die Profile, das ist am sichersten
+            const { data: fships } = await sup.from('friendships').select('user_id_2').eq('user_id_1', session.user.id);
             
-            if(data && data.length > 0) {
-                document.getElementById('friend-list').innerHTML = data.map(f => `<div style="margin-bottom:10px; color:white; font-weight:bold;">🟢 ${f.profiles.username}</div>`).join('');
+            const listDiv = document.getElementById('friend-list');
+            if(fships && fships.length > 0) {
+                const ids = fships.map(f => f.user_id_2);
+                const { data: profiles } = await sup.from('profiles').select('username').in('id', ids);
+                
+                if(profiles && profiles.length > 0) {
+                    listDiv.innerHTML = profiles.map(p => `
+                        <div class="user-row" style="border:none">
+                            <span style="font-weight:bold; color:white">🟢 ${p.username}</span>
+                        </div>
+                    `).join('');
+                }
+            } else {
+                listDiv.innerHTML = "Noch keine Freunde hinzugefügt.";
             }
         }
         loadFriends();

@@ -56,15 +56,21 @@
             if(!session) return window.location.href = 'index.html';
             myId = session.user.id;
 
-            // Freunde laden
-            const { data: friends } = await sup.from('friendships').select('user_id_2, profiles!friendships_user_id_2_fkey(username)').eq('user_id_1', myId);
+            // Freunde sicher laden
+            const { data: fships } = await sup.from('friendships').select('user_id_2').eq('user_id_1', myId);
             const sel = document.getElementById('friendSelect');
-            friends.forEach(f => {
-                const opt = document.createElement('option');
-                opt.value = f.user_id_2;
-                opt.innerText = f.profiles.username;
-                sel.appendChild(opt);
-            });
+            
+            if(fships && fships.length > 0) {
+                const ids = fships.map(f => f.user_id_2);
+                const { data: profiles } = await sup.from('profiles').select('id, username').in('id', ids);
+                
+                profiles.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.innerText = p.username;
+                    sel.appendChild(opt);
+                });
+            }
 
             sel.onchange = () => { targetId = sel.value; loadMsgs(); };
             
