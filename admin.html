@@ -102,27 +102,35 @@
 
         async function loadSubmissions() {
             const { data: subs, error } = await sup.from('challenge_submissions')
-                .select('*, profiles(username), challenges(title, points)')
+                .select('*')
                 .eq('status', 'pending');
             
             const div = document.getElementById('submission-list');
             if(!subs || subs.length === 0) { div.innerHTML = "Keine neuen Beweise vorhanden."; return; }
 
-            div.innerHTML = subs.map(s => `
-                <div class="card">
-                    <div style="display:flex; gap:20px;">
-                        <img src="${s.proof_url}" style="width:120px; border-radius:10px;">
-                        <div style="flex:1; text-align:left;">
-                            <h3 style="color:white; margin:0">${s.challenges.title}</h3>
-                            <p style="color:#facc15; font-weight:bold">${s.profiles.username} will dafür ${s.challenges.points} PKT</p>
-                            <div style="margin-top:15px; display:flex; gap:10px;">
-                                <button class="action" style="padding:10px; font-size:12px;" onclick="judge('${s.id}', '${s.user_id}', ${s.challenges.points}, true)">✅ GENEHMIGEN</button>
-                                <button class="action" style="background:#ef4444; padding:10px; font-size:12px;" onclick="judge('${s.id}', '', 0, false)">❌ ABLEHNEN</button>
+            // Da wir die Foreign Keys entfernt haben, laden wir die User/Quest Infos manuell
+            div.innerHTML = '';
+            for (const s of subs) {
+                // Versuche Usernamen zu finden
+                const { data: prof } = await sup.from('profiles').select('username').eq('id', s.user_id).single();
+                // Versuche Quest Titel zu finden
+                const { data: quest } = await sup.from('challenges').select('title, points').eq('id', s.challenge_id).single();
+
+                div.innerHTML += `
+                    <div class="card">
+                        <div style="display:flex; flex-direction:column; gap:15px; text-align:left;">
+                            <img src="${s.proof_url}" style="width:100%; max-height:300px; object-fit:contain; border-radius:15px; border:1px solid #10b981;">
+                            <div style="flex:1;">
+                                <h3 style="color:white; margin:0">${quest?.title || 'Unbekannte Quest'}</h3>
+                                <p style="color:#facc15; font-weight:bold">${prof?.username || 'Unbekannter User'} fordert dafür ${quest?.points || '??'} PKT</p>
+                                <div style="margin-top:15px; display:flex; gap:10px;">
+                                    <button class="action" style="padding:15px; font-size:14px; flex:1;" onclick="judge('${s.id}', '${s.user_id}', ${quest?.points || 0}, true)">✅ GENEHMIGEN</button>
+                                    <button class="action" style="background:#ef4444; color:white; padding:15px; font-size:14px; flex:1;" onclick="judge('${s.id}', '', 0, false)">❌ ABLEHNEN</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            `).join('');
+                    </div>`;
+            }
         }
 
         async function judge(subId, userId, points, isApproved) {
