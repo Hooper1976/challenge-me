@@ -71,6 +71,7 @@
         const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
         let activeQuestId = null;
         let myId = null;
+        let activePrivateId = null;
 
         async function run() {
             const { data: { session } } = await sup.auth.getSession();
@@ -80,33 +81,70 @@
             const { data: profile } = await sup.from('profiles').select('username').eq('id', myId).single();
             document.getElementById('user').innerText = "Yo, " + (profile?.username || session.user.email.split('@')[0]);
 
-            // Unread Badge Check
-            const { count: unread } = await sup.from('messages').select('*', {count: 'exact', head:true}).eq('receiver_id', myId).eq('is_read', false);
-            if(unread > 0) { document.getElementById('unreadCount').innerText = unread; document.getElementById('unreadCount').style.display='block'; }
+            // UNREAD MESSAGES CHECK
+            const { count: unread } = await sup.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', myId).eq('is_read', false);
+            if(unread > 0) { document.getElementById('unreadBadge').innerText = unread; document.getElementById('unreadBadge').style.display='block'; }
 
-            // Challenges laden
+            // LADE PRIVATE DUELLE
+            const { data: privates } = await sup.from('user_challenges')
+                .select('*, profiles!user_challenges_creator_id_fkey(username)')
+                .eq('target_id', myId)
+                .eq('status', 'pending');
+            
+            if(privates && privates.length > 0) {
+                document.getElementById('privateSection').style.display = 'block';
+                const pList = document.getElementById('privateList');
+                pList.innerHTML = '';
+                privates.forEach(p => {
+                    pList.innerHTML += `
+                        <div class="card" style="border-color: #facc15;" onclick="openPrivate('${p.id}', '${p.title}', '${p.description}', '${p.prize_text}', '${p.profiles.username}')">
+                            <div>
+                                <h3 style="color:#facc15">${p.title}</h3>
+                                <p>Von: ${p.profiles.username} | Preis: ${p.prize_text}</p>
+                            </div>
+                            <div class="pts">⚔️</div>
+                        </div>`;
+                });
+            }
+
+            // LADE GLOBALE QUESTS
             const { data: quests } = await sup.from('challenges').select('*');
             const list = document.getElementById('list');
             if(quests && quests.length > 0) {
                 list.innerHTML = '';
                 quests.forEach(q => {
-                    list.innerHTML += `
-                        <div class="card" onclick="openQuest('${q.id}', '${q.title}', '${q.description}')">
-                            <div>
-                                <h3>${q.title}</h3>
-                                <p>${q.description}</p>
-                            </div>
-                            <div class="pts">${q.points}</div>
-                        </div>`;
+                    list.innerHTML += `<div class="card" onclick="openQuest('${q.id}', '${q.title}', '${q.description}')"><div><h3>${q.title}</h3><p>${q.description}</p></div><div class="pts">${q.points}</div></div>`;
                 });
             }
         }
 
         function openQuest(id, title, desc) {
-            activeQuestId = id;
+            activeQuestId = id; activePrivateId = null;
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('normalUpload').style.display = 'block';
+            document.getElementById('privateAction').style.display = 'none';
             document.getElementById('questModal').style.display = 'flex';
+        }
+
+        function openPrivate(id, title, desc, prize, sender) {
+            activePrivateId = id; activeQuestId = null;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = "VON: " + sender + "\n\n" + desc;
+            document.getElementById('prizeDisplay').innerText = "ZIEL: " + prize;
+            document.getElementById('normalUpload').style.display = 'none';
+            document.getElementById('privateAction').style.display = 'block';
+            document.getElementById('questModal').style.display = 'flex';
+        }
+
+        async function completePrivateChallenge() {
+            if(!activePrivateId) return;
+            const { error } = await sup.from('user_challenges').update({ status: 'completed' }).eq('id', activePrivateId);
+            if(!error) {
+                alert("STARK! Du hast die Challenge abgeschlossen. Der Ersteller wurde benachrichtigt!");
+                closeModal();
+                location.reload();
+            }
         }
 
         function closeModal() {
