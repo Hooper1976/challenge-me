@@ -121,12 +121,19 @@
             status.innerText = "BEWEIS WIRD HOCHGELADEN...";
             
             const fileName = `proofs/${myId}_${activeQuestId}_${Date.now()}.jpg`;
-            const { data, error } = await sup.storage.from('app_assets').upload(fileName, file);
+            const { data: uploadData, error } = await sup.storage.from('app_assets').upload(fileName, file);
             
             if(error) {
                 alert("Upload Fehler: " + error.message);
                 status.innerText = "";
             } else {
+                const { data: { publicUrl } } = sup.storage.from('app_assets').getPublicUrl(fileName);
+                
+                // Eintrag in die Prüf-Tabelle machen
+                await sup.from('challenge_submissions').insert([
+                    { user_id: myId, challenge_id: activeQuestId, proof_url: publicUrl }
+                ]);
+
                 alert("Super! Dein Beweis wurde eingereicht. Der Admin prüft das jetzt! ⚡");
                 closeModal();
             }

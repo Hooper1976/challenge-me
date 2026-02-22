@@ -39,18 +39,25 @@
     <div class="sidebar">
         <h1>ADMIN V3</h1>
         <button id="btn-u" class="menu-btn active" onclick="show('users')">👥 User & Punkte</button>
+        <button id="btn-s" class="menu-btn" onclick="show('submissions')">✅ Beweise prüfen</button>
         <button id="btn-r" class="menu-btn" onclick="show('rewards')">🎁 Belohnung (+Bild)</button>
         <div style="height:50px"></div>
         <a href="dashboard.html" style="color:#10b981; text-decoration:none; font-size:12px;">← ZUR APP</a>
     </div>
 
     <div class="main">
+        <!-- USER VERWALTUNG -->
         <div id="sec-users" class="section">
             <div style="display:flex; justify-content:space-between; align-items:center">
                 <h2>User Verwaltung</h2>
-                <button onclick="syncUsers()" style="background:#064e3b; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:10px">REPARSE USERS FROM AUTH</button>
             </div>
             <div id="user-list">Lade User...</div>
+        </div>
+
+        <!-- BEWEISE PRÜFEN -->
+        <div id="sec-submissions" class="section" style="display:none">
+            <h2>Beweise prüfen</h2>
+            <div id="submission-list">Suche nach neuen Einreichungen...</div>
         </div>
 
         <div id="sec-rewards" class="section" style="display:none">
@@ -89,7 +96,45 @@
             document.getElementById('sec-'+s).style.display='block';
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
             if(s==='users') { document.getElementById('btn-u').classList.add('active'); loadUsers(); }
+            if(s==='submissions') { document.getElementById('btn-s').classList.add('active'); loadSubmissions(); }
             if(s==='rewards') { document.getElementById('btn-r').classList.add('active'); loadRewards(); }
+        }
+
+        async function loadSubmissions() {
+            const { data: subs, error } = await sup.from('challenge_submissions')
+                .select('*, profiles(username), challenges(title, points)')
+                .eq('status', 'pending');
+            
+            const div = document.getElementById('submission-list');
+            if(!subs || subs.length === 0) { div.innerHTML = "Keine neuen Beweise vorhanden."; return; }
+
+            div.innerHTML = subs.map(s => `
+                <div class="card">
+                    <div style="display:flex; gap:20px;">
+                        <img src="${s.proof_url}" style="width:120px; border-radius:10px;">
+                        <div style="flex:1; text-align:left;">
+                            <h3 style="color:white; margin:0">${s.challenges.title}</h3>
+                            <p style="color:#facc15; font-weight:bold">${s.profiles.username} will dafür ${s.challenges.points} PKT</p>
+                            <div style="margin-top:15px; display:flex; gap:10px;">
+                                <button class="action" style="padding:10px; font-size:12px;" onclick="judge('${s.id}', '${s.user_id}', ${s.challenges.points}, true)">✅ GENEHMIGEN</button>
+                                <button class="action" style="background:#ef4444; padding:10px; font-size:12px;" onclick="judge('${s.id}', '', 0, false)">❌ ABLEHNEN</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function judge(subId, userId, points, isApproved) {
+            if(isApproved) {
+                // Punkte gutschreiben
+                const { data: p } = await sup.from('profiles').select('total_points').eq('id', userId).single();
+                await sup.from('profiles').update({ total_points: (p.total_points || 0) + points }).eq('id', userId);
+                alert("Punkte vergeben!");
+            }
+            // Status in Tabelle ändern
+            await sup.from('challenge_submissions').update({ status: isApproved ? 'approved' : 'rejected' }).eq('id', subId);
+            loadSubmissions();
         }
 
         async function loadUsers() {
