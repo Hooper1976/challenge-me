@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge Me - Leaderboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .pwa-scroll {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .pwa-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+        .rank-gold { background: linear-gradient(135deg, #fbbf24 0%, #b45309 100%); }
+        .rank-silver { background: linear-gradient(135deg, #94a3b8 0%, #475569 100%); }
+        .rank-bronze { background: linear-gradient(135deg, #d97706 0%, #78350f 100%); }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="max-w-md mx-auto min-h-screen flex flex-col pwa-scroll">
+
+    <!-- Header -->
+    <header class="p-6 bg-slate-900/80 sticky top-0 z-20 backdrop-blur-md border-b border-slate-800">
+        <h1 class="text-2xl font-black italic tracking-tighter text-yellow-500 uppercase">Hall of Fame</h1>
+        <div class="flex mt-4 bg-slate-800 p-1 rounded-2xl">
+            <button class="flex-1 py-2 bg-yellow-500 text-black font-black rounded-xl text-sm">Global</button>
+            <button class="flex-1 py-2 text-slate-400 font-bold text-sm">Friends</button>
+        </div>
+    </header>
+
+    <!-- Top 3 Podium -->
+    <section class="flex justify-center items-end space-x-2 px-6 pt-12 pb-8 bg-gradient-to-b from-slate-900 to-slate-800">
+        <!-- Rank 2 -->
+        <div class="flex flex-col items-center">
+            <div class="relative">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Lukas" class="w-16 h-16 rounded-2xl border-2 border-slate-400 mb-2">
+                <span class="absolute -top-2 -right-2 rank-silver w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold italic">2</span>
+            </div>
+            <p class="text-[10px] font-black uppercase text-slate-400">@Lukas_04</p>
+            <p class="text-sm font-black text-white">4.820</p>
+            <div class="w-20 h-24 bg-slate-700/50 rounded-t-2xl mt-2 border-t border-slate-600"></div>
+        </div>
+
+        <!-- Rank 1 -->
+        <div class="flex flex-col items-center">
+            <div class="relative">
+                <div class="absolute -top-8 left-1/2 -translate-x-1/2 text-2xl text-yellow-500 animate-bounce">👑</div>
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" class="w-20 h-20 rounded-3xl border-4 border-yellow-500 mb-2 shadow-[0_0_20px_rgba(234,179,8,0.5)]">
+                <span class="absolute -top-2 -right-2 rank-gold w-8 h-8 rounded-full flex items-center justify-center text-sm font-black italic text-black">1</span>
+            </div>
+            <p class="text-xs font-black uppercase text-yellow-500">@Queen_S</p>
+            <p class="text-lg font-black text-white">5.150</p>
+            <div class="w-24 h-32 bg-yellow-500/10 rounded-t-3xl mt-2 border-t-2 border-yellow-500/50"></div>
+        </div>
+
+        <!-- Rank 3 -->
+        <div class="flex flex-col items-center">
+            <div class="relative">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-16 h-16 rounded-2xl border-2 border-amber-700 mb-2">
+                <span class="absolute -top-2 -right-2 rank-bronze w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold italic text-white">3</span>
+            </div>
+            <p class="text-[10px] font-black uppercase text-slate-400">@FixFelix</p>
+            <p class="text-sm font-black text-white">4.100</p>
+            <div class="w-20 h-16 bg-slate-700/50 rounded-t-2xl mt-2 border-t border-slate-600"></div>
+        </div>
+    </section>
+
+    <!-- Full List -->
+    <section class="px-6 space-y-3 mb-28">
+        <!-- User Rank -->
+        <div class="glass-card p-4 rounded-3xl border border-yellow-500/50 flex items-center shadow-[0_0_15px_rgba(234,179,8,0.1)]">
+            <span class="w-8 font-black text-yellow-500 italic">#14</span>
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Florian" class="w-10 h-10 rounded-xl mr-4 border border-yellow-500">
+            <div class="flex-1">
+                <h4 class="font-black text-sm">DU (Florian)</h4>
+                <p class="text-[10px] text-slate-400">Nur noch 350 Pts zu Rank 13</p>
+            </div>
+            <div class="text-right">
+                <span class="font-black text-white">1.250</span>
+            </div>
+        </div>
+
+        <div class="h-px bg-slate-800 my-4"></div>
+
+        <!-- Others -->
+        <div class="glass-card p-3 rounded-2xl border border-slate-700/50 flex items-center opacity-80">
+            <span class="w-8 font-bold text-slate-400 italic">4</span>
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mia" class="w-8 h-8 rounded-lg mr-4 overflow-hidden">
+            <div class="flex-1">
+                <h4 class="font-bold text-sm text-slate-200">@Mia_World</h4>
+            </div>
+            <div class="text-right">
+                <span class="font-bold text-slate-300">3.950</span>
+            </div>
+        </div>
+
+        <div class="glass-card p-3 rounded-2xl border border-slate-700/50 flex items-center opacity-80">
+            <span class="w-8 font-bold text-slate-400 italic">5</span>
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Tom" class="w-8 h-8 rounded-lg mr-4 overflow-hidden">
+            <div class="flex-1">
+                <h4 class="font-bold text-sm text-slate-200">@TomTurbo</h4>
+            </div>
+            <div class="text-right">
+                <span class="font-bold text-slate-300">3.800</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 px-8 py-4 flex justify-between items-center bg-slate-900/95 backdrop-blur-xl">
+        <button class="text-slate-500 flex flex-col items-center" onclick="window.location.href='index.html'">
+            <i class="fas fa-th-large text-xl"></i>
+            <span class="text-[10px] mt-1">Home</span>
+        </button>
+        <button class="text-yellow-500 flex flex-col items-center">
+            <i class="fas fa-trophy text-xl"></i>
+            <span class="text-[10px] mt-1 text-yellow-500">Ranking</span>
+        </button>
+        <button class="bg-yellow-500 text-black w-12 h-12 rounded-full flex items-center justify-center -mt-10 border-4 border-slate-900 shadow-lg">
+            <i class="fas fa-plus text-xl"></i>
+        </button>
+        <button class="text-slate-500 flex flex-col items-center">
+            <i class="fas fa-comment text-xl"></i>
+            <span class="text-[10px] mt-1">Chat</span>
+        </button>
+        <button class="text-slate-500 flex flex-col items-center">
+            <i class="fas fa-users text-xl"></i>
+            <span class="text-[10px] mt-1">Freunde</span>
+        </button>
+    </nav>
+
+</body>
+</html>

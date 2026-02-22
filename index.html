@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge Me - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .pwa-scroll {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .pwa-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+        .challenge-card {
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.2s;
+        }
+        .challenge-card:active {
+            transform: scale(0.95);
+        }
+        .overlay {
+            background: linear-gradient(0deg, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.2) 100%);
+        }
+    </style>
+</head>
+<body class="max-w-md mx-auto min-h-screen flex flex-col pwa-scroll">
+
+    <!-- Header -->
+    <header class="p-6 flex justify-between items-center sticky top-0 bg-slate-900/80 backdrop-blur-md z-10">
+        <div>
+            <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-600 italic tracking-tighter">CHALLENGE ME</h1>
+            <p class="text-xs text-slate-400 font-medium">Servus Florian, bereit für heute?</p>
+        </div>
+        <div class="relative">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Florian" class="w-12 h-12 rounded-2xl border-2 border-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.4)]" alt="Avatar">
+            <span class="absolute -bottom-1 -right-1 bg-yellow-500 text-black text-[10px] font-black px-2 rounded-md">LEVEL 12</span>
+        </div>
+    </header>
+
+    <!-- Hot Global Challenges -->
+    <section class="mt-4 px-6">
+        <h2 class="text-xl font-black mb-3 flex items-center uppercase tracking-tight">
+            <span class="bg-red-500 w-2 h-6 mr-2"></span> Gerade Trend
+        </h2>
+        <div class="flex space-x-4 overflow-x-auto pwa-scroll pb-4">
+            <!-- Card 1 (Eating) -->
+            <div class="min-w-[260px] h-40 challenge-card rounded-3xl relative overflow-hidden shadow-2xl" style="background-image: url('https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400&q=80');">
+                <div class="absolute inset-0 overlay p-4 flex flex-col justify-end">
+                    <span class="absolute top-3 left-3 bg-red-600 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest">Heiß 🔥</span>
+                    <h3 class="text-lg font-black leading-tight">THE 1ST BURGER CHALLENGE</h3>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-yellow-400 font-bold">500 PKT</span>
+                        <button class="bg-white text-black text-xs px-4 py-1.5 rounded-full font-black">MACHEN</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 2 (Adventure) -->
+            <div class="min-w-[260px] h-40 challenge-card rounded-3xl relative overflow-hidden shadow-2xl" style="background-image: url('https://images.unsplash.com/photo-1533107862482-0e6974b06ec4?auto=format&fit=crop&w=400&q=80');">
+                <div class="absolute inset-0 overlay p-4 flex flex-col justify-end">
+                    <span class="absolute top-3 left-3 bg-blue-600 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest">NACHT</span>
+                    <h3 class="text-lg font-black leading-tight">NACKT BADEN IM SEE</h3>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-yellow-400 font-bold">800 PKT</span>
+                        <button class="bg-white text-black text-xs px-4 py-1.5 rounded-full font-black">MITMACHEN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feed / Tasks -->
+    <section class="mt-8 px-6 mb-28">
+        <h2 class="text-xl font-black mb-4 uppercase tracking-tight">Deine Aufgaben</h2>
+
+        <!-- Task 1 (Singing) -->
+        <div class="bg-slate-800/50 rounded-3xl p-1 mb-6 border border-slate-700 shadow-xl overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=600&q=80" class="w-full h-32 object-cover rounded-2xl" alt="Singing">
+            <div class="p-4 flex justify-between items-center">
+                <div>
+                    <h4 class="font-black text-lg">10er Chor finden 🎤</h4>
+                    <p class="text-xs text-slate-400">Herausforderung von <span class="text-blue-400">@Lukas_04</span></p>
+                </div>
+                <div class="bg-yellow-500 text-black font-black p-2 rounded-2xl text-center min-w-[60px]">
+                    <span class="text-xs block leading-none">WERT</span>
+                    <span class="text-lg">+400</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task 2 (Food/Vorspeise) -->
+        <div class="bg-slate-800/50 rounded-3xl p-1 mb-6 border border-slate-700 shadow-xl overflow-hidden opacity-60">
+            <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80" class="w-full h-32 object-cover rounded-2xl" alt="Restaurant">
+            <div class="p-4 flex justify-between items-center">
+                <div>
+                    <h4 class="font-black text-lg line-through italic">Nur Vorspeise essen</h4>
+                    <p class="text-xs text-green-400 flex items-center">
+                        <i class="fas fa-check-circle mr-1"></i> Erledigt - Beweis akzeptiert
+                    </p>
+                </div>
+                <div class="bg-green-500 text-white font-black p-2 rounded-2xl text-center min-w-[60px]">
+                    <i class="fas fa-trophy text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigation Bar (PWA Style) -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 px-8 py-4 flex justify-between items-center bg-slate-900/95 backdrop-blur-xl">
+        <button class="text-yellow-500 flex flex-col items-center">
+            <i class="fas fa-th-large text-xl"></i>
+            <span class="text-[10px] mt-1">Home</span>
+        </button>
+        <button class="text-slate-500 flex flex-col items-center">
+            <i class="fas fa-trophy text-xl"></i>
+            <span class="text-[10px] mt-1">Ranking</span>
+        </button>
+        <button class="bg-yellow-500 text-black w-12 h-12 rounded-full flex items-center justify-center -mt-10 border-4 border-slate-900 shadow-lg">
+            <i class="fas fa-plus text-xl"></i>
+        </button>
+        <button class="text-slate-500 flex flex-col items-center">
+            <i class="fas fa-comment shadow-sm text-xl"></i>
+            <span class="text-[10px] mt-1">Chat</span>
+        </button>
+        <button class="text-slate-500 flex flex-col items-center">
+            <i class="fas fa-users text-xl"></i>
+            <span class="text-[10px] mt-1">Freunde</span>
+        </button>
+    </nav>
+
+</body>
+</html>

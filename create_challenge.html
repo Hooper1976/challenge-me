@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge Me - New Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+        .input-focus:focus {
+            box-shadow: 0 0 15px rgba(234, 179, 8, 0.3);
+            border-color: #eab308;
+        }
+        .gradient-btn {
+            background: linear-gradient(90deg, #eab308 0%, #f97316 100%);
+        }
+    </style>
+</head>
+<body class="max-w-md mx-auto min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="p-6 flex items-center bg-slate-900 border-b border-slate-800">
+        <button onclick="window.location.href='index.html'" class="text-slate-400 mr-4">
+            <i class="fas fa-chevron-left text-xl"></i>
+        </button>
+        <h1 class="text-2xl font-black italic tracking-tighter text-yellow-500 uppercase">Create Quest</h1>
+    </header>
+
+    <main class="p-6 flex-1 space-y-6">
+        <!-- Challenge Title -->
+        <div>
+            <label class="block text-xs font-black uppercase text-slate-500 mb-2 tracking-widest">Wie heißt die Challenge?</label>
+            <input type="text" placeholder="z.B. 24h ohne Handy" 
+                   class="w-full bg-slate-800 border-2 border-slate-700 rounded-2xl p-4 text-white font-bold outline-none input-focus transition-all">
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label class="block text-xs font-black uppercase text-slate-500 mb-2 tracking-widest">Was muss man tun?</label>
+            <textarea placeholder="Beschreibe die Aufgabe so genau wie möglich..." 
+                      rows="3"
+                      class="w-full bg-slate-800 border-2 border-slate-700 rounded-2xl p-4 text-white font-medium outline-none input-focus transition-all"></textarea>
+        </div>
+
+        <!-- Points & Difficulty -->
+        <div class="flex space-x-4">
+            <div class="flex-1">
+                <label class="block text-xs font-black uppercase text-slate-500 mb-2 tracking-widest">Punkte</label>
+                <div class="relative">
+                    <input type="number" value="250" 
+                           class="w-full bg-slate-800 border-2 border-slate-700 rounded-2xl p-4 text-yellow-500 font-black outline-none input-focus">
+                    <i class="fas fa-star absolute right-4 top-1/2 -translate-y-1/2 text-yellow-600"></i>
+                </div>
+            </div>
+            <div class="flex-1">
+                <label class="block text-xs font-black uppercase text-slate-500 mb-2 tracking-widest">Kategorie</label>
+                <select class="w-full bg-slate-800 border-2 border-slate-700 rounded-2xl p-4 text-white font-bold outline-none appearance-none cursor-pointer">
+                    <option>🔥 Action</option>
+                    <option>🍔 Food</option>
+                    <option>🎤 Social</option>
+                    <option>🌲 Nature</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Target / Who to challenge -->
+        <div>
+            <label class="block text-xs font-black uppercase text-slate-500 mb-2 tracking-widest">Wen forderst du heraus?</label>
+            <div class="flex space-x-2 overflow-x-auto pb-2">
+                <div class="flex flex-col items-center min-w-[70px]">
+                    <div class="w-14 h-14 rounded-2xl bg-yellow-500 flex items-center justify-center text-black shadow-lg shadow-yellow-500/20">
+                        <i class="fas fa-users text-xl"></i>
+                    </div>
+                    <span class="text-[10px] mt-1 font-bold">Alle</span>
+                </div>
+                <div class="flex flex-col items-center min-w-[70px] opacity-50">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Lukas" class="w-14 h-14 rounded-2xl border-2 border-slate-700">
+                    <span class="text-[10px] mt-1 font-medium">Lukas</span>
+                </div>
+                <div class="flex flex-col items-center min-w-[70px] opacity-50">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" class="w-14 h-14 rounded-2xl border-2 border-slate-700">
+                    <span class="text-[10px] mt-1 font-medium">Sarah</span>
+                </div>
+                <button class="w-14 h-14 rounded-2xl border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-600">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Rewards / Prize (Optional) -->
+        <div class="bg-blue-600/10 border border-blue-500/30 p-4 rounded-3xl">
+            <div class="flex items-center mb-2">
+                <i class="fas fa-gift text-blue-400 mr-2"></i>
+                <h4 class="text-sm font-black uppercase italic">Einsatz / Preis</h4>
+            </div>
+            <input type="text" placeholder="z.B. Der Verlierer zahlt Pizza" 
+                   class="w-full bg-transparent border-b border-blue-500/50 p-2 text-white text-sm outline-none placeholder:text-blue-400/50">
+        </div>
+
+        <!-- Submit Button -->
+        <button class="w-full py-5 rounded-2xl font-black text-black uppercase tracking-widest text-lg shadow-xl shadow-orange-600/20 active:scale-95 transition-transform gradient-btn">
+            Challenge Senden 🚀
+        </button>
+    </main>
+
+</body>
+</html>
