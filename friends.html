@@ -3,44 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Freunde - Challenge Me</title>
+    <title>Community - Challenge Me</title>
     <style>
         body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; }
+        h1 { font-style: italic; font-size: 24px; color: #10b981; margin: 0 0 20px; text-transform: uppercase; }
         .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-bottom: 15px; }
-        input { width: 100%; padding: 15px; background: #061c14; border: 1px solid #064e3b; border-radius: 12px; color: white; margin-bottom: 10px; }
-        .btn { padding: 10px 20px; background: #10b981; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #064e3b; }
-        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; }
+        input { width: 100%; padding: 15px; background: #061c14; border: 1px solid #064e3b; border-radius: 12px; color: white; margin-bottom: 10px; box-sizing: border-box; }
+        .btn { padding: 10px 20px; background: #10b981; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        .btn-green { background: #059669; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #064e3b; }
+        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; }
         .nav a { color: white; font-size: 24px; text-decoration: none; }
     </style>
 </head>
 <body>
-    <div style="text-align: left;"><a href="dashboard.html" style="color:#10b981; text-decoration:none;">← ZURÜCK</a></div>
-    
     <h1>Community</h1>
 
-    <!-- Einladungs-Sektion -->
-    <div class="card" style="background: linear-gradient(135deg, #064e3b 0%, #062d24 100%);">
-        <h2 style="font-size: 16px; color: white; margin-top: 0;">Lade Freunde ein</h2>
-        <p style="font-size: 11px; color: #d1fae5; opacity: 0.8; margin-bottom: 15px;">Schicke deinen Freunden einen Link, damit sie dich herausfordern können.</p>
-        <button class="btn" style="background: #25D366; width: 100%; display: flex; align-items: center; justify-content: center;" onclick="inviteWhatsApp()">
-            <i class="fab fa-whatsapp style='margin-right: 10px; font-size: 20px;'"></i> PER WHATSAPP EINLADEN
-        </button>
-    </div>
-
     <!-- Suche -->
-    <h2 style="font-size: 14px; margin-top: 30px; text-transform: uppercase;">User suchen</h2>
     <div class="card">
-        <input type="text" id="search" placeholder="Username eingeben...">
-        <button class="btn" style="width: 100%;" onclick="searchUser()">JETZT FINDEN 🔎</button>
+        <input type="text" id="search" placeholder="Username suchen...">
+        <button class="btn" style="width: 100%;" onclick="searchUser()">User finden 🔎</button>
     </div>
     <div id="results"></div>
 
-    <!-- Kontakte -->
-    <h2 style="font-size: 14px; margin-top: 30px; text-transform: uppercase;">Deine Kontakte</h2>
-    <div id="friend-list" class="card" style="font-size: 13px; opacity: 0.7;">Noch keine Freunde hinzugefügt.</div>
+    <!-- Offene Anfragen -->
+    <h2 style="font-size: 14px; margin-top: 30px; text-transform: uppercase; color:#facc15">📩 Offene Anfragen</h2>
+    <div id="request-list" class="card" style="font-size: 13px;">Keine neuen Anfragen.</div>
 
-    <!-- Navigation -->
+    <!-- Kontakte -->
+    <h2 style="font-size: 14px; margin-top: 30px; text-transform: uppercase;">✅ Deine Freunde</h2>
+    <div id="friend-list" class="card" style="font-size: 13px;">Noch keine Freunde bestätigt.</div>
+
     <div class="nav">
         <a href="dashboard.html">🏠</a>
         <a href="rewards.html">🎁</a>
@@ -52,63 +45,68 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
-        
-        function inviteWhatsApp() {
-            const text = "Hey! Fordere mich in der Challenge Me App heraus! ⚡ Hier registrieren: https://challenge-me.vercel.app";
-            window.open("https://wa.me/?text=" + encodeURIComponent(text));
+        let myId;
+
+        async function init() {
+            const { data: { session } } = await sup.auth.getSession();
+            if(!session) return window.location.href = 'index.html';
+            myId = session.user.id;
+            loadRequests();
+            loadFriends();
         }
 
         async function searchUser() {
             const query = document.getElementById('search').value.trim();
             if(query.length < 2) return;
-            
-            const { data, error } = await sup.from('profiles').select('*').ilike('username', `%${query}%`);
+            const { data } = await sup.from('profiles').select('*').ilike('username', `%${query}%`).neq('id', myId);
             const div = document.getElementById('results');
             div.innerHTML = '';
-            
+            data.forEach(u => {
+                div.innerHTML += `<div class="card user-row"><span>${u.username}</span><button class="btn" onclick="sendRequest('${u.id}')">ANFRAGE SENDEN</button></div>`;
+            });
+        }
+
+        async function sendRequest(id) {
+            const { error } = await sup.from('friendships').insert([{ user_id_1: myId, user_id_2: id, status: 'pending' }]);
+            if(error) alert("Anfrage bereits gesendet!");
+            else alert("Anfrage wurde verschickt!");
+        }
+
+        async function loadRequests() {
+            // Zeige Personen an, die MIR eine Anfrage geschickt haben
+            const { data } = await sup.from('friendships').select('user_id_1').eq('user_id_2', myId).eq('status', 'pending');
+            const listDiv = document.getElementById('request-list');
             if(data && data.length > 0) {
-                data.forEach(u => {
-                    div.innerHTML += `
-                        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-weight:bold">${u.username}</span>
-                            <button class="btn" style="padding: 5px 15px; font-size: 12px;" onclick="addFriend('${u.id}')">+ ADD</button>
-                        </div>`;
-                });
-            } else {
-                div.innerHTML = "<p style='font-size:12px; opacity:0.5'>Keinen User gefunden.</p>";
+                const ids = data.map(r => r.user_id_1);
+                const { data: profiles } = await sup.from('profiles').select('id, username').in('id', ids);
+                listDiv.innerHTML = profiles.map(p => `
+                    <div class="user-row" style="border:none">
+                        <span>${p.username}</span>
+                        <button class="btn btn-green" onclick="acceptFriend('${p.id}')">ANNEHMEN</button>
+                    </div>
+                `).join('');
             }
         }
 
-        async function addFriend(id) {
-            const { data: { session } } = await sup.auth.getSession();
-            const { error } = await sup.from('friendships').insert([{ user_id_1: session.user.id, user_id_2: id, status: 'accepted' }]);
-            
-            if(error) alert("Bereits befreundet oder Fehler!");
-            else { alert("Freund erfolgreich hinzugefügt! 🤝"); location.reload(); }
+        async function acceptFriend(senderId) {
+            // Update die Anfrage auf 'accepted'
+            await sup.from('friendships').update({ status: 'accepted' }).eq('user_id_1', senderId).eq('user_id_2', myId);
+            // Erstelle den Gegen-Eintrag damit beide befreundet sind (Symmetrie)
+            await sup.from('friendships').upsert([{ user_id_1: myId, user_id_2: senderId, status: 'accepted' }]);
+            alert("Freundschaft bestätigt! 🤝");
+            location.reload();
         }
 
         async function loadFriends() {
-            const { data: { session } } = await sup.auth.getSession();
-            // Wir laden erst die IDs und dann die Profile, das ist am sichersten
-            const { data: fships } = await sup.from('friendships').select('user_id_2').eq('user_id_1', session.user.id);
-            
+            const { data: fships } = await sup.from('friendships').select('user_id_2').eq('user_id_1', myId).eq('status', 'accepted');
             const listDiv = document.getElementById('friend-list');
             if(fships && fships.length > 0) {
                 const ids = fships.map(f => f.user_id_2);
                 const { data: profiles } = await sup.from('profiles').select('username').in('id', ids);
-                
-                if(profiles && profiles.length > 0) {
-                    listDiv.innerHTML = profiles.map(p => `
-                        <div class="user-row" style="border:none">
-                            <span style="font-weight:bold; color:white">🟢 ${p.username}</span>
-                        </div>
-                    `).join('');
-                }
-            } else {
-                listDiv.innerHTML = "Noch keine Freunde hinzugefügt.";
+                listDiv.innerHTML = profiles.map(p => `<div class="user-row" style="border:none"><span>🟢 ${p.username}</span></div>`).join('');
             }
         }
-        loadFriends();
+        init();
     </script>
 </body>
 </html>
