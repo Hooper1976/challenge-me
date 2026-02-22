@@ -107,17 +107,24 @@
                 const btn = document.getElementById('genBtn');
                 btn.innerText = "KI SUCHT BILD...";
                 
-                // Wir nutzen Unsplash Source für reale Bilder basierend auf dem Thema
+                // Stabilerer Link für dynamische Bilder
                 const encoded = encodeURIComponent(t);
-                const imageUrl = `https://source.unsplash.com/featured/800x600?${encoded},action,adventure&sig=${Math.random()}`;
+                const imageUrl = `https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?auto=format&fit=crop&w=800&q=60&title=${encoded}&sig=${Math.random()}`;
                 
                 const img = document.getElementById('preview-img');
-                img.src = imageUrl;
+                const pText = document.getElementById('preview-text');
+                const hiddenUrl = document.getElementById('final-img-url');
+
+                // Fallback: Falls Unsplash Source klemmt, nutzen wir eine direkte thematische Suche
+                const finalUrl = "https://loremflickr.com/800/600/" + encoded;
+
+                img.src = finalUrl;
                 img.style.display = 'block';
-                document.getElementById('preview-text').style.display = 'none';
-                document.getElementById('final-img-url').value = imageUrl;
+                pText.style.display = 'none';
+                hiddenUrl.value = finalUrl;
                 
                 img.onload = () => { btn.innerText = "BILD GEFUNDEN! NOCHMAL?"; };
+                img.onerror = () => { btn.innerText = "ERNEUT VERSUCHEN"; alert("Fehler beim Laden des Bildes."); };
             };
 
             document.getElementById('sendBtn').onclick = async () => {
