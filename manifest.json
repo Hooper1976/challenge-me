@@ -1,0 +1,17 @@
+{
+  "name": "Challenge Me",
+  "short_name": "ChallengeMe",
+  "description": "Die ultimative Social Challenge App",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#eab308",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/icons/svg?seed=bolt&backgroundColor=eab308",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
