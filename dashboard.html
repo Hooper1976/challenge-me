@@ -3,117 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Challenge Me - Quests</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Dashboard - Challenge Me</title>
     <style>
-        body { background-color: #061c14; color: white; font-family: 'Inter', sans-serif; }
-        .glass-card { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.1); backdrop-filter: blur(10px); }
-        .emerald-glow { box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
-        .pwa-scroll { scrollbar-width: none; -ms-overflow-style: none; }
-        .pwa-scroll::-webkit-scrollbar { display: none; }
+        body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; }
+        h1 { font-style: italic; font-size: 24px; color: #10b981; margin: 0; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #064e3b; padding-bottom: 15px; }
+        .logout { color: #059669; text-decoration: none; font-size: 14px; font-weight: bold; border: 1px solid #064e3b; padding: 5px 10px; border-radius: 8px; }
+        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .card h3 { margin: 0; font-size: 18px; color: white; }
+        .card p { margin: 5px 0 0; font-size: 12px; color: #10b981; }
+        .pts { font-weight: 900; color: #10b981; font-size: 20px; }
+        #status { font-size: 12px; color: #059669; text-align: center; margin-top: 20px; }
+        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; }
+        .nav a { color: white; font-weight: bold; text-decoration: none; font-size: 20px; }
     </style>
 </head>
-<body class="max-w-md mx-auto min-h-screen flex flex-col pwa-scroll">
-
-    <!-- Header -->
-    <header class="p-6 flex justify-between items-center sticky top-0 bg-[#061c14]/80 backdrop-blur-md z-20 border-b border-emerald-900/30">
-        <div>
-            <h1 class="text-2xl font-black text-emerald-400 italic tracking-tighter">CHALLENGE ME</h1>
-            <p id="userWelcome" class="text-[10px] text-emerald-500/60 uppercase font-bold tracking-widest">Lädt Profil...</p>
-        </div>
-        <div class="flex items-center space-x-3">
-            <button id="logoutBtn" class="text-emerald-700 hover:text-red-500 transition-colors">
-                <i class="fas fa-power-off text-xl"></i>
-            </button>
-            <div class="relative">
-                <img id="userAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" class="w-10 h-10 rounded-xl border border-emerald-500/50 shadow-lg shadow-emerald-500/10">
-            </div>
-        </div>
+<body>
+    <header>
+        <h1>CHALLENGE ME</h1>
+        <a href="#" id="lo" class="logout">LOGOUT</a>
     </header>
 
-    <!-- Quests Container -->
-    <main class="p-6 space-y-6 mb-24">
-        <h2 class="text-xl font-black uppercase tracking-tight text-emerald-400 flex items-center">
-            <span class="w-2 h-6 bg-emerald-500 mr-3"></span> Deine Quests
-        </h2>
-        
-        <div id="challengeList" class="space-y-4 text-center py-10 text-emerald-500/50 italic text-sm">
-            Suche nach neuen Aufgaben...
-        </div>
-    </main>
+    <div id="user">Lade Profil...</div>
+    <h2 style="font-size: 16px; margin-top: 30px; text-transform: uppercase;">Deine Quests:</h2>
+    <div id="list">Suche Aufgaben...</div>
 
-    <!-- Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#061c14] border-t border-emerald-900/30 px-8 py-4 flex justify-between items-center bg-[#061c14]/95 backdrop-blur-xl z-20">
-        <a href="dashboard.html" class="text-emerald-500 flex flex-col items-center">
-            <i class="fas fa-th-large text-xl"></i>
-            <span class="text-[10px] mt-1">Home</span>
-        </a>
-        <a href="ranking.html" class="text-emerald-900 flex flex-col items-center">
-            <i class="fas fa-trophy text-xl"></i>
-            <span class="text-[10px] mt-1 text-emerald-900">Ranking</span>
-        </a>
-        <a href="create_challenge.html" class="bg-emerald-500 text-black w-12 h-12 rounded-full flex items-center justify-center -mt-10 border-4 border-[#061c14] shadow-lg emerald-glow">
-            <i class="fas fa-plus text-xl"></i>
-        </a>
-        <a href="chat.html" class="text-emerald-900 flex flex-col items-center">
-            <i class="fas fa-comment text-xl"></i>
-            <span class="text-[10px] mt-1 text-emerald-900">Chat</span>
-        </a>
-        <button class="text-emerald-900 flex flex-col items-center opacity-50 cursor-not-allowed">
-            <i class="fas fa-users text-xl"></i>
-            <span class="text-[10px] mt-1">Freunde</span>
-        </button>
-    </nav>
+    <div id="status">System: Synchronisiert</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Navigation Platzhalter -->
+    <div style="height: 100px;"></div>
+    <div class="nav">
+        <a href="dashboard.html">🏠</a>
+        <a href="ranking.html" style="opacity:0.3">🏆</a>
+        <a href="create_challenge.html" style="opacity:0.3">➕</a>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = "https://pfvvpqljjfmyvtyiuibh.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4";
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        async function init() {
-            // User Check
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.href = 'index.html';
-                return;
-            }
-
-            document.getElementById('userWelcome').innerText = "Servus, " + session.user.email.split('@')[0];
-
-            // Load Challenges
-            const { data: challenges, error } = await supabase.from('challenges').select('*');
-            const listDiv = document.getElementById('challengeList');
+        const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
+        
+        async function run() {
+            const { data: { session } } = await sup.auth.getSession();
+            if(!session) { window.location.href = 'index.html'; return; }
             
-            if (challenges && challenges.length > 0) {
-                listDiv.innerHTML = '';
-                challenges.forEach(task => {
-                    listDiv.innerHTML += `
-                        <div class="glass-card p-4 rounded-3xl flex items-center border border-emerald-900/30">
-                            <div class="w-12 h-12 bg-emerald-900/50 rounded-2xl flex items-center justify-center text-xl mr-4 border border-emerald-500/20">🔥</div>
-                            <div class="flex-1 text-left">
-                                <h4 class="font-bold text-sm text-emerald-100">${task.title}</h4>
-                                <p class="text-[10px] text-emerald-500/70">${task.description}</p>
+            document.getElementById('user').innerText = "Servus, " + session.user.email;
+
+            const { data: quests, error } = await sup.from('challenges').select('*');
+            const list = document.getElementById('list');
+            
+            if(quests && quests.length > 0) {
+                list.innerHTML = '';
+                quests.forEach(q => {
+                    list.innerHTML += `
+                        <div class="card">
+                            <div>
+                                <h3>${q.title}</h3>
+                                <p>${q.description}</p>
                             </div>
-                            <div class="text-right">
-                                <span class="block text-sm font-black text-emerald-400">+${task.points}</span>
-                                <button class="text-[10px] bg-emerald-500 text-black px-2 py-0.5 rounded mt-1 font-black">GO</button>
-                            </div>
-                        </div>
-                    `;
+                            <div class="pts">${q.points}</div>
+                        </div>`;
                 });
             } else {
-                listDiv.innerHTML = "Keine Quests gefunden :(";
+                list.innerHTML = "<p style='color:grey'>Noch keine Quests in der Datenbank.</p>";
             }
         }
 
-        document.getElementById('logoutBtn').onclick = async () => {
-            await supabase.auth.signOut();
+        document.getElementById('lo').onclick = async () => {
+            await sup.auth.signOut();
             window.location.href = 'index.html';
-        }
+        };
 
-        init();
+        run();
     </script>
 </body>
 </html>
