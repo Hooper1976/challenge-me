@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Profil - Challenge Me</title>
+    <style>
+        body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; text-align: center; }
+        .card { background: #062d24; padding: 25px; border-radius: 25px; border: 1px solid #064e3b; margin-top: 20px; }
+        .avatar-large { width: 100px; height: 100px; background: #10b981; border-radius: 30px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; box-shadow: 0 0 20px rgba(16,185,129,0.3); }
+        input { width: 100%; padding: 15px; background: #061c14; border: 2px solid #064e3b; border-radius: 15px; color: white; font-size: 18px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+        input:focus { border-color: #10b981; outline: none; }
+        .btn-save { width: 100%; padding: 18px; background: #10b981; color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; }
+        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; }
+        .nav a { color: white; font-size: 24px; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div style="text-align: left;"><a href="dashboard.html" style="color:#10b981; text-decoration:none;">← ZURÜCK</a></div>
+    
+    <div class="card">
+        <div class="avatar-large" id="avatarIcon">👤</div>
+        <h2 style="margin-top:0; color: white;">Dein Profil</h2>
+        <p style="font-size: 12px; color: #059669; font-weight: bold;">WÄHLE DEINEN USERNAMEN</p>
+        
+        <input type="text" id="username" placeholder="z.B. KingChallenge">
+        <button id="saveBtn" class="btn-save">SPEICHERN 💾</button>
+        
+        <p id="info" style="font-size: 11px; margin-top: 15px; opacity: 0.6;">Diesen Namen sehen deine Freunde,</p>
+        <p style="font-size: 11px; opacity: 0.6;">wenn sie dich suchen.</p>
+    </div>
+
+    <div class="nav">
+        <a href="dashboard.html">🏠</a>
+        <a href="rewards.html">🎁</a>
+        <a href="friends.html">👥</a>
+        <a href="profile.html">👤</a>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
+        
+        async function loadProfile() {
+            const { data: { session } } = await sup.auth.getSession();
+            if(!session) { window.location.href = 'index.html'; return; }
+
+            const { data: profile } = await sup.from('profiles').select('username').eq('id', session.user.id).single();
+            if(profile && profile.username) {
+                document.getElementById('username').value = profile.username;
+                document.getElementById('avatarIcon').innerText = profile.username[0].toUpperCase();
+            }
+
+            document.getElementById('saveBtn').onclick = async () => {
+                const newName = document.getElementById('username').value.trim();
+                if(newName.length < 3) { alert("Name zu kurz!"); return; }
+
+                const { error } = await sup.from('profiles').upsert({ 
+                    id: session.user.id, 
+                    username: newName,
+                    updated_at: new Date()
+                });
+
+                if(error) {
+                    alert("Name evtl. schon vergeben? " + error.message);
+                } else {
+                    alert("Profil aktualisiert! ✨");
+                    location.reload();
+                }
+            };
+        }
+        loadProfile();
+    </script>
+</body>
+</html>
