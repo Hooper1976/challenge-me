@@ -6,39 +6,49 @@
     <title>Challenge erstellen - Multi-User</title>
     <style>
         body { background: #061c14; color: #10b981; font-family: sans-serif; padding: 20px; padding-bottom: 100px; }
-        h1 { font-style: italic; font-size: 24px; color: #10b981; text-transform: uppercase; margin-bottom: 20px; }
+        h1 { font-style: italic; font-size: 24px; color: #10b981; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
         .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-top: 10px; }
-        label { display: block; text-align: left; font-size: 12px; font-weight: bold; margin: 15px 0 5px; color: #059669; }
+        label { display: block; text-align: left; font-size: 11px; font-weight: bold; margin: 15px 0 5px; color: #059669; text-transform: uppercase; }
         input, textarea { width: 100%; padding: 15px; background: #061c14; border: 1px solid #064e3b; border-radius: 12px; color: white; font-size: 16px; box-sizing: border-box; }
         
-        /* Multi-Select Styles */
+        #ai-preview { width: 100%; height: 180px; border-radius: 15px; background: #061c14; margin: 15px 0; border: 2px dashed #064e3b; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        #ai-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .ai-btn { background: #8b5cf6; color: white; padding: 10px 15px; border-radius: 10px; border: none; font-weight: bold; font-size: 12px; cursor: pointer; margin-bottom: 10px; }
+        
         .friend-chip { display: inline-block; padding: 8px 15px; background: #064e3b; border-radius: 20px; margin: 5px; font-size: 12px; cursor: pointer; color: white; border: 1px solid transparent; }
         .friend-chip.selected { background: #10b981; border-color: white; font-weight: bold; }
-        
-        .btn-send { width: 100%; padding: 18px; background: #10b981; color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; margin-top: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .btn-send { width: 100%; padding: 18px; background: #10b981; color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; margin-top: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
         .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; }
         .nav a { color: white; font-size: 24px; text-decoration: none; }
     </style>
 </head>
 <body>
-    <h1>Multi-Challenge ⚔️</h1>
+    <h1>Challenge erstellen</h1>
 
     <div class="card">
-        <label>Wen forderst du heraus? (Mehrere möglich)</label>
-        <div id="friendSelector" style="text-align: left; background: #061c14; padding: 10px; border-radius: 12px; border: 1px solid #064e3b; min-height: 50px;">
+        <label>Wen forderst du heraus?</label>
+        <div id="friendSelector" style="text-align: left; background: #061c14; padding: 10px; border-radius: 12px; border: 1px solid #064e3b; min-height: 40px;">
             Lade Freunde...
         </div>
 
-        <label>Titel der Challenge</label>
-        <input type="text" id="title" placeholder="z.B. Das ultimative Wander-WE">
+        <label>Titel</label>
+        <input type="text" id="title" placeholder="z.B. 24h Eisbaden">
 
-        <label>Details / Aufgabenliste</label>
-        <textarea id="desc" rows="4" placeholder="Beschreibe die Aufgabe oder die Serie von Quests..."></textarea>
+        <label>Design (AI Magic ✨)</label>
+        <div id="ai-preview">
+            <span id="preview-text" style="color:#064e3b; font-size:10px;">Vorschau Video/Bild</span>
+            <img id="preview-img" style="display:none;">
+        </div>
+        <button class="ai-btn" id="genBtn">PASSENDES BILD GENERIEREN 🤖</button>
+        <input type="hidden" id="final-img-url">
 
-        <label>Der Preis / Belohnung</label>
-        <input type="text" id="prize" placeholder="z.B. Der Verlierer zahlt die Hütte">
+        <label>Details</label>
+        <textarea id="desc" rows="3" placeholder="Was genau ist zu tun?"></textarea>
 
-        <button id="sendBtn" class="btn-send">Herausforderung senden 🚀</button>
+        <label>Dein Preis</label>
+        <input type="text" id="prize" placeholder="z.B. Gewinner kriegt ein Steak">
+
+        <button id="sendBtn" class="btn-send">ABSENDEN 🔥</button>
     </div>
 
     <div class="nav">
@@ -90,20 +100,41 @@
                 selector.innerHTML = "<p style='font-size:11px; opacity:0.5; margin:0'>Füge erst Freunde hinzu!</p>";
             }
 
+            document.getElementById('genBtn').onclick = () => {
+                const t = document.getElementById('title').value;
+                if(!t) return alert("Gib erst einen Titel ein!");
+                
+                const btn = document.getElementById('genBtn');
+                btn.innerText = "KI SUCHT BILD...";
+                
+                // Wir nutzen Unsplash Source für reale Bilder basierend auf dem Thema
+                const encoded = encodeURIComponent(t);
+                const imageUrl = `https://source.unsplash.com/featured/800x600?${encoded},action,adventure&sig=${Math.random()}`;
+                
+                const img = document.getElementById('preview-img');
+                img.src = imageUrl;
+                img.style.display = 'block';
+                document.getElementById('preview-text').style.display = 'none';
+                document.getElementById('final-img-url').value = imageUrl;
+                
+                img.onload = () => { btn.innerText = "BILD GEFUNDEN! NOCHMAL?"; };
+            };
+
             document.getElementById('sendBtn').onclick = async () => {
                 const t = document.getElementById('title').value;
                 const d = document.getElementById('desc').value;
                 const p = document.getElementById('prize').value;
+                const cover = document.getElementById('final-img-url').value;
 
                 if(selectedFriends.length === 0 || !t) return alert("Wähle Freunde und einen Titel!");
 
-                // Für jeden ausgewählten Freund einen Eintrag erstellen
                 const insertData = selectedFriends.map(targetName => ({
                     creator_name: myName,
                     target_name: targetName,
                     title: t,
                     description: d,
                     prize_text: p,
+                    cover_image_url: cover,
                     status: 'pending'
                 }));
 
