@@ -47,21 +47,21 @@
     </div>
 
     <!-- Login Form -->
-    <form id="loginForm" class="space-y-4">
+    <form id="loginForm" class="space-y-4" action="index.html">
         <div class="relative">
             <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
-            <input type="email" placeholder="E-Mail Adresse" 
+            <input type="email" placeholder="E-Mail Adresse" required
                    class="w-full bg-slate-800 border-2 border-slate-700 rounded-2xl py-4 pl-12 pr-4 text-white font-bold outline-none input-focus transition-all">
         </div>
         <div class="relative">
             <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
-            <input type="password" placeholder="Passwort" 
+            <input type="password" placeholder="Passwort" required
                    class="w-full bg-slate-800 border-2 border-slate-700 rounded-2xl py-4 pl-12 pr-4 text-white font-bold outline-none input-focus transition-all">
         </div>
         <div class="text-right">
             <a href="#" class="text-xs text-yellow-500 font-bold">Passwort vergessen?</a>
         </div>
-        <button type="button" onclick="window.location.href='index.html'"
+        <button type="submit"
                 class="w-full py-5 rounded-2xl font-black text-black uppercase tracking-widest text-lg shadow-xl shadow-orange-600/20 active:scale-95 transition-transform gradient-btn mt-4">
             Anmelden 🚀
         </button>
