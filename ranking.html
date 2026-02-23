@@ -5,109 +5,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ranking - Challenge Me</title>
     <style>
-        body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; text-align: center; }
-        h1 { font-style: italic; font-size: 26px; color: #10b981; margin: 0 0 20px; font-weight: 900; }
+        :root {
+            --primary: #10b981;
+            --bg-dark: #061c14;
+            --bg-card: #062d24;
+            --text-light: #d1fae5;
+            --border: #064e3b;
+        }
+        body { background: var(--bg-dark); color: var(--text-light); font-family: sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; }
         
-        /* Podium Styles */
-        .podium { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin-top: 40px; margin-bottom: 40px; }
-        .rank-box { background: #062d24; border: 1px solid #10b981; border-radius: 15px; padding: 15px; position: relative; width: 100px; display: flex; flex-direction: column; align-items: center; }
-        .rank-2 { height: 140px; }
-        .rank-1 { height: 180px; border-color: #facc15; box-shadow: 0 0 25px rgba(250, 204, 21, 0.2); }
-        .rank-3 { height: 120px; }
-        
-        .avatar-circle { width: 50px; height: 50px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; margin-bottom: 10px; border: 2px solid #10b981; }
-        .rank-1 .avatar-circle { border-color: #facc15; transform: scale(1.1); }
-        
-        .crown { position: absolute; top: -25px; font-size: 24px; }
-        .pos-badge { background: #10b981; color: #061c14; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; position: absolute; bottom: -10px; }
-        
-        /* List Styles */
-        .leaderboard-list { text-align: left; margin-top: 20px; padding-bottom: 100px; }
-        .user-row { background: #062d24; padding: 15px 20px; border-radius: 15px; margin-bottom: 10px; display: flex; align-items: center; border: 1px solid #064e3b; }
-        .user-row.me { border-color: #10b981; background: rgba(16, 185, 129, 0.1); }
-        .rank-num { width: 30px; font-weight: 900; color: #059669; italic; }
-        .user-name { flex: 1; color: white; font-weight: bold; }
-        .user-xp { font-weight: 900; color: #10b981; }
+        .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+        .back-btn { background: none; border: none; color: var(--primary); font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+        h1 { font-size: 20px; color: white; margin: 0; text-transform: uppercase; font-weight: 800; }
 
-        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .nav a { color: white; font-size: 24px; text-decoration: none; }
+        /* Podium */
+        .podium { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 40px 0; }
+        .rank-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 15px; position: relative; width: 90px; display: flex; flex-direction: column; align-items: center; }
+        .rank-2 { height: 130px; }
+        .rank-1 { height: 170px; border-color: #facc15; box-shadow: 0 0 20px rgba(250, 204, 21, 0.2); }
+        .rank-3 { height: 110px; }
+        
+        .avatar-circle { width: 45px; height: 45px; background: var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; margin-bottom: 8px; border: 2px solid var(--primary); }
+        .rank-1 .avatar-circle { border-color: #facc15; width: 55px; height: 55px; }
+        
+        .crown { position: absolute; top: -30px; font-size: 24px; }
+        .pos-badge { background: var(--primary); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; position: absolute; bottom: -11px; }
+        .rank-1 .pos-badge { background: #facc15; color: black; }
+        
+        /* List */
+        .section-label { font-size: 11px; margin: 30px 0 15px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; }
+        .user-row { background: var(--bg-card); padding: 12px 15px; border-radius: 12px; margin-bottom: 8px; display: flex; align-items: center; border: 1px solid var(--border); }
+        .user-row.me { border-color: var(--primary); background: rgba(16, 185, 129, 0.1); }
+        .rank-num { width: 35px; font-weight: 800; color: var(--primary); font-size: 14px; }
+        .user-name { flex: 1; color: white; font-weight: 600; font-size: 14px; }
+        .user-xp { font-weight: bold; color: var(--primary); font-size: 13px; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(6, 28, 20, 0.95); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
+        .nav-link { text-decoration: none; display: flex; flex-direction: column; align-items: center; color: var(--text-light); opacity: 0.6; font-size: 10px; font-weight: 600; }
+        .nav-link.active { color: var(--primary); opacity: 1; }
+        .nav-link i { font-size: 20px; margin-bottom: 4px; }
+        .btn-plus { width: 55px; height: 55px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -40px; border: 5px solid var(--bg-dark); color: white; font-size: 24px; text-decoration: none; }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <h1>HALL OF FAME 🏆</h1>
+    <div class="header-top">
+        <a href="dashboard.html" class="back-btn"><i class="fas fa-chevron-left"></i> ZURÜCK</a>
+        <h1>Bestenliste</h1>
+        <div style="width: 20px;"></div>
+    </div>
 
     <div class="podium" id="topThree">
-        <!-- Rank 2 -->
         <div class="rank-box rank-2" id="pos2" style="visibility:hidden">
             <div class="avatar-circle">?</div>
             <div style="font-size:10px; font-weight:bold; color:white;" id="r2Name">---</div>
-            <div style="font-size:12px; font-weight:900;" id="r2XP">0</div>
+            <div style="font-size:11px; font-weight:bold; color:var(--primary);" id="r2XP">0</div>
             <div class="pos-badge">2</div>
         </div>
-        <!-- Rank 1 -->
         <div class="rank-box rank-1" id="pos1" style="visibility:hidden">
             <div class="crown">👑</div>
             <div class="avatar-circle">?</div>
-            <div style="font-size:12px; font-weight:bold; color:white; margin-top:5px;" id="r1Name">---</div>
-            <div style="font-size:14px; font-weight:900; color:#facc15" id="r1XP">0</div>
-            <div class="pos-badge" style="background:#facc15">1</div>
+            <div style="font-size:11px; font-weight:bold; color:white; margin-top:5px;" id="r1Name">---</div>
+            <div style="font-size:12px; font-weight:bold; color:#facc15" id="r1XP">0</div>
+            <div class="pos-badge">1</div>
         </div>
-        <!-- Rank 3 -->
         <div class="rank-box rank-3" id="pos3" style="visibility:hidden">
             <div class="avatar-circle">?</div>
             <div style="font-size:10px; font-weight:bold; color:white;" id="r3Name">---</div>
-            <div style="font-size:12px; font-weight:900;" id="r3XP">0</div>
+            <div style="font-size:11px; font-weight:bold; color:var(--primary);" id="r3XP">0</div>
             <div class="pos-badge">3</div>
         </div>
     </div>
 
-    <div class="leaderboard-list" id="fullList">
-        <!-- Liste kommt hier rein -->
-    </div>
+    <div class="section-label">Herausforderer</div>
+    <div id="fullList"></div>
 
-    <div class="nav">
-        <a href="dashboard.html">🏠</a>
-        <a href="rewards.html">🎁</a>
-        <a href="create_challenge.html" style="background:white; color:#10b981; width:50px; height:50px; border-radius:25px; display:flex; align-items:center; justify-content:center; margin-top:-35px; border:4px solid #061c14; font-weight:bold;">+</a>
-        <a href="friends.html">👥</a>
-        <a href="ranking.html">🏆</a>
-    </div>
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="rewards.html" class="nav-link">
+            <i class="fas fa-gift"></i>
+            <span>Rewards</span>
+        </a>
+        <a href="create_challenge.html" class="btn-plus">
+            <i class="fas fa-plus"></i>
+        </a>
+        <a href="friends.html" class="nav-link">
+            <i class="fas fa-users"></i>
+            <span>Freunde</span>
+        </a>
+        <a href="profile.html" class="nav-link">
+            <i class="fas fa-user-circle"></i>
+            <span>Profil</span>
+        </a>
+    </nav>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
-        
         async function loadRanking() {
             const { data: { session } } = await sup.auth.getSession();
             const { data: users } = await sup.from('profiles').select('*').order('total_points', { ascending: false });
-
-            // Podium füllen
             if(users.length >= 1) fillRank(1, users[0]);
             if(users.length >= 2) fillRank(2, users[1]);
             if(users.length >= 3) fillRank(3, users[2]);
-
-            // Gesamte Liste
             const list = document.getElementById('fullList');
-            list.innerHTML = `<h2 style="font-size:12px; opacity:0.5; margin-bottom:15px; text-transform:uppercase;">Alle Herausforderer</h2>`;
-            
             users.forEach((u, idx) => {
                 const isMe = session && u.id === session.user.id;
                 list.innerHTML += `
                     <div class="user-row ${isMe ? 'me' : ''}">
                         <div class="rank-num">#${idx + 1}</div>
-                        <div class="user-name">${u.username || 'Unbekannt'} ${isMe ? '(ICH)' : ''}</div>
+                        <div class="user-name">${u.username || 'Unbekannt'}</div>
                         <div class="user-xp">${u.total_points || 0} XP</div>
                     </div>`;
             });
         }
-
         function fillRank(pos, user) {
             document.getElementById('pos'+pos).style.visibility = 'visible';
             document.getElementById('r'+pos+'Name').innerText = user.username;
             document.getElementById('r'+pos+'XP').innerText = (user.total_points || 0) + " XP";
             document.querySelector('#pos'+pos+' .avatar-circle').innerText = user.username[0].toUpperCase();
         }
-
         loadRanking();
     </script>
 </body>

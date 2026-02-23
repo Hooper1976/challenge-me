@@ -5,120 +5,172 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Challenge Me - Dashboard</title>
     <style>
+        :root {
+            --primary: #10b981; /* Modernes Grün */
+            --bg-dark: #061c14;
+            --bg-card: #062d24;
+            --text-light: #d1fae5;
+            --border: #064e3b;
+        }
         body { 
-            background: #000; 
-            color: #d1fae5; 
-            font-family: 'Arial Black', sans-serif; 
+            background: var(--bg-dark); 
+            color: var(--text-light); 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
             margin: 0; 
             padding-bottom: 100px;
         }
-        .overlay-dark { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: -1; }
         
         header { 
-            display: flex; flex-direction: column; align-items: center; 
-            padding: 20px; background: #000; 
-            border-bottom: 2px solid #edff00;
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px 20px; background: var(--bg-dark); 
+            border-bottom: 1px solid var(--border);
             position: sticky; top: 0; z-index: 1000;
         }
         .logo-container { display: flex; align-items: center; gap: 10px; }
         .logo-icon { 
-            width: 40px; height: 40px; background: #edff00; border-radius: 10px;
+            width: 35px; height: 35px; background: var(--primary); border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 22px; color: black; font-weight: 900;
+            font-size: 20px; color: white; font-weight: bold;
         }
-        .logo-text { font-size: 20px; font-weight: 900; color: #edff00; text-transform: uppercase; font-style: italic; }
+        .logo-text { font-size: 18px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
 
         /* HERO BEREICH */
         .hero {
-            position: relative; width: 100%; height: 280px;
-            background: url('https://images.unsplash.com/photo-1541571440-2051e0413009?auto=format&fit=crop&w=800&q=80') center center;
+            position: relative; width: 100%; height: 220px;
+            background: linear-gradient(to bottom, rgba(6, 45, 36, 0.4), var(--bg-dark)), 
+                        url('https://images.unsplash.com/photo-1541571440-2051e0413009?auto=format&fit=crop&w=800&q=80') center center;
             background-size: cover; display: flex; align-items: flex-end;
         }
         .hero-overlay {
-            width: 100%; padding: 30px 20px;
-            background: linear-gradient(transparent, #000);
+            width: 100%; padding: 25px 20px;
             text-align: left;
         }
-        .hero-title { font-size: 24px; color: #edff00; margin: 0; text-transform: uppercase; font-style: italic; }
-        .hero-desc { font-size: 13px; color: white; margin-top: 5px; line-height: 1.4; opacity: 0.9; font-family: sans-serif; font-weight: bold; }
+        .hero-title { font-size: 24px; color: white; margin: 0; text-transform: uppercase; font-weight: 900; }
+        .hero-desc { font-size: 14px; color: var(--text-light); margin-top: 8px; line-height: 1.5; opacity: 0.8; }
+
+        /* QUICK ACTIONS */
+        .quick-stats {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px; margin-top: -30px; position: relative; z-index: 10;
+        }
+        .stat-card {
+            background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border);
+            text-align: center;
+        }
+        .stat-value { font-size: 20px; font-weight: bold; color: var(--primary); display: block; }
+        .stat-label { font-size: 10px; text-transform: uppercase; opacity: 0.6; letter-spacing: 1px; }
 
         /* NAV KARTEN */
         .nav-grid { padding: 20px; display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .menu-card {
-            position: relative; height: 130px; border-radius: 20px; overflow: hidden;
-            border: 1px solid rgba(237,255,0,0.3); display: flex; align-items: center; padding-left: 25px;
-            text-decoration: none; transition: transform 0.2s;
-        }
-        .menu-card:active { transform: scale(0.97); }
-        .menu-card img { position: absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-1; filter: brightness(0.5) grayscale(0.3); }
-        .menu-card h2 { color: #edff00; font-size: 22px; margin: 0; text-transform: uppercase; font-style: italic; text-shadow: 2px 2px 10px #000; }
-        .menu-card p { color: white; font-size: 10px; margin: 5px 0 0; font-family: sans-serif; letter-spacing: 1px; }
+        .section-title { padding: 0 20px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; margin-top: 20px; }
 
+        .menu-card {
+            background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border);
+            display: flex; align-items: center; padding: 15px; gap: 15px;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .menu-card:active { transform: scale(0.98); background: #083c2f; }
+        .card-icon { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; }
+        .card-content h2 { color: white; font-size: 16px; margin: 0; text-transform: uppercase; }
+        .card-content p { color: var(--primary); font-size: 12px; margin: 4px 0 0; font-weight: 600; }
+
+        /* NAV */
         .bottom-nav { 
-            position: fixed; bottom: 0; left: 0; right: 0; height: 85px;
-            background: rgba(0,0,0,0.95); display: flex; justify-content: space-around; align-items: center;
-            border-top: 1px solid #edff00; z-index: 1000; padding-bottom: 15px;
+            position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
+            background: rgba(6, 28, 20, 0.95); display: flex; justify-content: space-around; align-items: center;
+            border-top: 1px solid var(--border); z-index: 1000; padding-bottom: env(safe-area-inset-bottom);
         }
         .nav-link { 
             text-decoration: none; display: flex; flex-direction: column; align-items: center;
-            color: #edff00; font-size: 9px; font-weight: 900; text-transform: uppercase;
+            color: var(--text-light); opacity: 0.6; font-size: 10px; font-weight: 600;
         }
-        .nav-icon { width: 32px; height: 32px; border-radius: 8px; background-size: cover; border: 1px solid rgba(237,255,0,0.4); margin-bottom: 5px; }
+        .nav-link.active { color: var(--primary); opacity: 1; }
+        .nav-link i { font-size: 20px; margin-bottom: 4px; }
+
+        .btn-plus {
+            width: 55px; height: 55px; background: var(--primary); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-top: -40px; border: 5px solid var(--bg-dark); box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            color: white; font-size: 24px; font-weight: bold; text-decoration: none;
+        }
     </style>
+    <!-- Font Awesome für Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <header>
         <div class="logo-container">
-            <div class="logo-icon">⚡</div>
-            <div class="logo-text">Challenge-Me</div>
+            <div class="logo-icon"><i class="fas fa-bolt"></i></div>
+            <div class="logo-text">CHALLENGE ME</div>
         </div>
+        <div style="font-size: 18px; color: var(--primary)"><i class="fas fa-bell"></i></div>
     </header>
 
     <div class="hero">
         <div class="hero-overlay">
-            <h2 class="hero-title">DEINE STADT. DEIN SPIEL.</h2>
-            <p class="hero-desc">Challenge dich und deine Freunde in realen Aufgaben. Sammle XP und hol dir legendäre Rewards!</p>
+            <h2 class="hero-title">Willkommen zurück!</h2>
+            <p class="hero-desc">Du hast heute 2 neue Herausforderungen in deiner Nähe.</p>
         </div>
     </div>
 
+    <div class="quick-stats">
+        <div class="stat-card">
+            <span class="stat-value">1.240</span>
+            <span class="stat-label">Gesamt XP</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">#12</span>
+            <span class="stat-label">Ranking</span>
+        </div>
+    </div>
+
+    <div class="section-title">Aktivitäten</div>
+
     <div class="nav-grid">
         <a href="quests_global.html" class="menu-card">
-            <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=400&q=80">
-            <div>
-                <h2>🔥 GLOBALE QUESTS</h2>
+            <img class="card-icon" src="https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=100&q=80">
+            <div class="card-content">
+                <h2>Globale Quests</h2>
                 <p>Verdiene XP & Medaillen</p>
             </div>
         </a>
 
         <a href="quests_private.html" class="menu-card">
-            <img src="https://images.unsplash.com/photo-1528605248644-14dd04cb113d?auto=format&fit=crop&w=400&q=80">
-            <div>
-                <h2>⚔️ DEINE DUELLE</h2>
+            <img class="card-icon" src="https://images.unsplash.com/photo-1528605248644-14dd04cb113d?auto=format&fit=crop&w=100&q=80">
+            <div class="card-content">
+                <h2>Deine Duelle</h2>
                 <p>Besiege deine Freunde</p>
+            </div>
+        </a>
+
+        <a href="ranking.html" class="menu-card">
+            <div class="card-icon" style="background: #1e40af; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="card-content">
+                <h2>Bestenliste</h2>
+                <p>Wer ist die Nummer 1?</p>
             </div>
         </a>
     </div>
 
-    <!-- Menü -->
     <nav class="bottom-nav">
-        <a href="dashboard.html" class="nav-link">
-            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=100&q=80');"></div>
+        <a href="dashboard.html" class="nav-link active">
+            <i class="fas fa-home"></i>
             <span>Home</span>
         </a>
         <a href="rewards.html" class="nav-link">
-            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=100&q=80');"></div>
+            <i class="fas fa-gift"></i>
             <span>Rewards</span>
         </a>
-        <a href="create_challenge.html" class="nav-link">
-            <div class="nav-icon" style="background-size: cover; border-radius: 50%; width: 50px; height: 50px; margin-top: -45px; border: 3px solid #edff00; background-image: url('https://images.unsplash.com/photo-1541571440-2051e0413009?auto=format&fit=crop&w=100&q=80');"></div>
-            <span>Quest</span>
+        <a href="create_challenge.html" class="btn-plus">
+            <i class="fas fa-plus"></i>
         </a>
         <a href="friends.html" class="nav-link">
-            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=100&q=80');"></div>
+            <i class="fas fa-users"></i>
             <span>Freunde</span>
         </a>
         <a href="profile.html" class="nav-link">
-            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80');"></div>
+            <i class="fas fa-user-circle"></i>
             <span>Profil</span>
         </a>
     </nav>

@@ -5,27 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Challenge Me</title>
     <style>
-        body { background: #061c14; color: #10b981; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
-        .box { background: #062d24; padding: 30px; border-radius: 20px; width: 100%; max-width: 320px; border: 1px solid #10b981; }
-        h1 { font-style: italic; font-size: 28px; margin-bottom: 20px; color: #10b981; }
-        input { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #064e3b; background: #061c14; color: white; box-sizing: border-box; font-size: 16px; outline: none; }
-        input:focus { border-color: #10b981; }
-        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #10b981; color: white; font-weight: bold; font-size: 18px; cursor: pointer; }
-        .tgl { margin-top: 20px; display: block; color: #10b981; text-decoration: underline; font-size: 14px; cursor: pointer; }
-        #status { font-size: 10px; color: #059669; margin-top: 15px; }
+        :root {
+            --primary: #10b981;
+            --bg-dark: #061c14;
+            --bg-card: #062d24;
+            --text-light: #d1fae5;
+            --border: #064e3b;
+        }
+        body { background: var(--bg-dark); color: var(--text-light); font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
+        .box { background: var(--bg-card); padding: 40px 30px; border-radius: 24px; width: 100%; max-width: 340px; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        
+        .logo-icon { width: 60px; height: 60px; background: var(--primary); border-radius: 16px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: white; }
+        h1 { font-size: 24px; font-weight: 800; margin-bottom: 30px; color: white; letter-spacing: 1px; }
+        
+        input { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-dark); color: white; box-sizing: border-box; font-size: 16px; outline: none; transition: border-color 0.2s; }
+        input:focus { border-color: var(--primary); }
+        
+        button { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; transition: opacity 0.2s; }
+        button:active { opacity: 0.8; }
+        
+        .tgl { margin-top: 25px; display: block; color: var(--primary); text-decoration: none; font-size: 14px; font-weight: 600; cursor: pointer; }
+        #status { font-size: 11px; color: #059669; margin-top: 20px; opacity: 0.6; }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="box">
+        <div class="logo-icon"><i class="fas fa-bolt"></i></div>
         <h1>CHALLENGE ME</h1>
-        <p id="mode" style="font-size: 12px; font-weight: bold; text-transform: uppercase;">Login</p>
+        <p id="mode" style="font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 2px; color: var(--primary);">Login</p>
         <form id="aForm">
             <input type="email" id="email" placeholder="E-Mail" required>
             <input type="password" id="pass" placeholder="Passwort" required>
             <button type="submit" id="btn">ANMELDEN</button>
         </form>
         <span id="tBtn" class="tgl">Noch kein Konto? Registrieren</span>
-        <div id="status">System: Online</div>
+        <div id="status"><i class="fas fa-circle" style="font-size: 8px; margin-right: 5px;"></i> System: Online</div>
     </div>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -45,23 +60,23 @@
             const b = document.getElementById('btn');
             const em = document.getElementById('email').value;
             const pa = document.getElementById('pass').value;
+            const oldT = b.innerText;
             b.innerText = "...";
             
             try {
                 if(isL) {
                     const { error } = await sup.auth.signInWithPassword({ email: em, password: pa });
                     if(error) throw error;
-                    alert("Eingeloggt!");
                     window.location.href = 'dashboard.html';
                 } else {
                     const { data, error } = await sup.auth.signUp({ email: em, password: pa });
                     if(error) throw error;
-                    alert("User erstellt!\nID: " + data.user.id);
+                    alert("User erstellt! Bitte E-Mail bestätigen.");
                 }
             } catch (err) {
                 alert("Fehler: " + err.message);
             }
-            b.innerText = isL ? "ANMELDEN" : "ERSTELLEN";
+            b.innerText = oldT;
         };
     </script>
 </body>

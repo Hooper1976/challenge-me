@@ -5,53 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Community - Challenge Me</title>
     <style>
-        body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; }
-        h1 { font-style: italic; font-size: 24px; color: #10b981; margin: 0 0 20px; text-transform: uppercase; }
-        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-bottom: 15px; }
-        input { width: 100%; padding: 15px; background: #061c14; border: 1px solid #064e3b; border-radius: 12px; color: white; margin-bottom: 10px; box-sizing: border-box; }
-        .btn { padding: 10px 20px; background: #10b981; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        :root {
+            --primary: #10b981;
+            --bg-dark: #061c14;
+            --bg-card: #062d24;
+            --text-light: #d1fae5;
+            --border: #064e3b;
+        }
+        body { background: var(--bg-dark); color: var(--text-light); font-family: sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; }
+        
+        .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+        .back-btn { background: none; border: none; color: var(--primary); font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+        h1 { font-size: 24px; color: white; margin: 0; text-transform: uppercase; font-weight: 800; }
+        
+        .card { background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 15px; }
+        input { width: 100%; padding: 15px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 12px; color: white; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; }
+        .btn { padding: 12px 20px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 13px; width: 100%; }
         .btn-green { background: #059669; }
-        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #064e3b; }
-        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; }
-        .nav a { color: white; font-size: 24px; text-decoration: none; }
+        
+        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .user-row:last-child { border-bottom: none; }
+        
+        .section-label { font-size: 12px; margin: 25px 0 10px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.6; display: flex; align-items: center; gap: 10px; }
+        .section-label::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
+            background: rgba(6, 28, 20, 0.95); display: flex; justify-content: space-around; align-items: center;
+            border-top: 1px solid var(--border); z-index: 1000; padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-link { text-decoration: none; display: flex; flex-direction: column; align-items: center; color: var(--text-light); opacity: 0.6; font-size: 10px; font-weight: 600; }
+        .nav-link.active { color: var(--primary); opacity: 1; }
+        .nav-link i { font-size: 20px; margin-bottom: 4px; }
+        .btn-plus { width: 55px; height: 55px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -40px; border: 5px solid var(--bg-dark); color: white; font-size: 24px; text-decoration: none; }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div style="text-align: left;"><a href="dashboard.html" style="color:#10b981; text-decoration:none;">← ZURÜCK</a></div>
-    
-    <h1>Community</h1>
+    <div class="header-top">
+        <a href="dashboard.html" class="back-btn"><i class="fas fa-chevron-left"></i> ZURÜCK</a>
+        <h1>Community</h1>
+        <div style="width: 20px;"></div>
+    </div>
 
     <!-- Einladungs-Sektion -->
     <div class="card" style="background: linear-gradient(135deg, #064e3b 0%, #062d24 100%);">
         <h2 style="font-size: 16px; color: white; margin-top: 0;">Lade Freunde ein</h2>
-        <p style="font-size: 11px; color: #d1fae5; opacity: 0.8; margin-bottom: 15px;">Schicke deinen Freunden einen Link, damit sie dich herausfordern können.</p>
-        <button class="btn" style="background: #25D366; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 14px;" onclick="doInvite()">
-            PER WHATSAPP EINLADEN 📲
+        <p style="font-size: 12px; color: #d1fae5; opacity: 0.8; margin-bottom: 15px;">Fordere deine Freunde direkt heraus oder schicke ihnen einen Link.</p>
+        <button class="btn" style="background: #25D366; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="doInvite()">
+            <i class="fab fa-whatsapp"></i> PER WHATSAPP EINLADEN
         </button>
     </div>
 
     <!-- Suche -->
     <div class="card">
         <input type="text" id="search" placeholder="Username suchen...">
-        <button class="btn" style="width: 100%;" onclick="searchUser()">User finden 🔎</button>
+        <button class="btn" onclick="searchUser()"><i class="fas fa-search"></i> User finden</button>
     </div>
     <div id="results"></div>
 
     <!-- Offene Anfragen -->
-    <h2 style="font-size: 14px; margin-top: 30px; text-transform: uppercase; color:#facc15">📩 Offene Anfragen</h2>
+    <div class="section-label" style="color:#facc15">Anfragen</div>
     <div id="request-list" class="card" style="font-size: 13px;">Keine neuen Anfragen.</div>
 
     <!-- Kontakte -->
-    <h2 style="font-size: 14px; margin-top: 30px; text-transform: uppercase;">✅ Deine Freunde</h2>
+    <div class="section-label">Deine Freunde</div>
     <div id="friend-list" class="card" style="font-size: 13px;">Noch keine Freunde bestätigt.</div>
 
-    <div class="nav">
-        <a href="dashboard.html">🏠</a>
-        <a href="rewards.html">🎁</a>
-        <a href="create_challenge.html" style="background:white; color:#10b981; width:50px; height:50px; border-radius:25px; display:flex; align-items:center; justify-content:center; margin-top:-35px; border:4px solid #061c14; font-weight:bold;">+</a>
-        <a href="friends.html">👥</a>
-        <a href="profile.html">👤</a>
-    </div>
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="rewards.html" class="nav-link">
+            <i class="fas fa-gift"></i>
+            <span>Rewards</span>
+        </a>
+        <a href="create_challenge.html" class="btn-plus">
+            <i class="fas fa-plus"></i>
+        </a>
+        <a href="friends.html" class="nav-link active">
+            <i class="fas fa-users"></i>
+            <span>Freunde</span>
+        </a>
+        <a href="profile.html" class="nav-link">
+            <i class="fas fa-user-circle"></i>
+            <span>Profil</span>
+        </a>
+    </nav>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
@@ -78,7 +119,7 @@
             const div = document.getElementById('results');
             div.innerHTML = '';
             data.forEach(u => {
-                div.innerHTML += `<div class="card user-row"><span>${u.username}</span><button class="btn" onclick="sendRequest('${u.id}')">ANFRAGE SENDEN</button></div>`;
+                div.innerHTML += `<div class="card user-row"><span>${u.username}</span><button class="btn" style="width:auto" onclick="sendRequest('${u.id}')">HINZUFÜGEN</button></div>`;
             });
         }
 
@@ -95,9 +136,9 @@
                 const ids = data.map(r => r.user_id_1);
                 const { data: profiles } = await sup.from('profiles').select('id, username').in('id', ids);
                 listDiv.innerHTML = profiles.map(p => `
-                    <div class="user-row" style="border:none">
+                    <div class="user-row">
                         <span>${p.username}</span>
-                        <button class="btn btn-green" onclick="acceptFriend('${p.id}')">ANNEHMEN</button>
+                        <button class="btn btn-green" style="width:auto" onclick="acceptFriend('${p.id}')">ANNEHMEN</button>
                     </div>
                 `).join('');
             }
@@ -116,9 +157,9 @@
                 const ids = fships.map(f => f.user_id_2);
                 const { data: profiles } = await sup.from('profiles').select('id, username').in('id', ids);
                 listDiv.innerHTML = profiles.map(p => `
-                    <div class="user-row" style="border:none; cursor:pointer" onclick="window.location.href='friend_profile.html?id=${p.id}'">
+                    <div class="user-row" style="cursor:pointer" onclick="window.location.href='friend_profile.html?id=${p.id}'">
                         <span>🟢 ${p.username}</span>
-                        <span style="font-size:10px; opacity:0.5">PROFIL ></span>
+                        <span style="font-size:12px; opacity:0.5"><i class="fas fa-chevron-right"></i></span>
                     </div>`).join('');
             }
         }
